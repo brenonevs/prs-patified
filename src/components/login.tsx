@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { LogoIcon } from "@/components/logo";
+import { PatifiedLogo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { signIn, useSession } from "@/lib/auth-client";
 import Link from "next/link";
@@ -54,8 +54,9 @@ export default function LoginPage() {
       >
         <div className="p-6">
           <div>
-            <Link href="/" aria-label="ir para a página inicial">
-              <LogoIcon />
+            <Link href="/" aria-label="ir para a página inicial" className="inline-flex items-center gap-2">
+              <PatifiedLogo className="h-11 brightness-0 invert" />
+              <span className="font-patified text-xl font-medium">Patified</span>
             </Link>
             <h1 className="mb-1 mt-4 text-xl font-semibold">Entrar no Patified</h1>
             <p>Bem-vindo de volta! Entre para continuar.</p>

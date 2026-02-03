@@ -1,13 +1,11 @@
 import React from 'react'
-import Link from 'next/link'
-import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { HeroHeader } from './header'
+import { PatifyButton } from './PatifyButton'
 import { HeroLottieDuck } from './HeroLottieDuck'
 import PixelSnow from './PixelSnow'
 import TextCursor from './TextCursor'
 import TextType from './TextType'
 import { HeroLottieArrow } from './HeroLottieArrow'
-import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { Footer } from './Footer'
 
@@ -95,14 +93,7 @@ export default function HeroSection() {
                                 </div>
                             </div>
                             <div className="relative z-10 flex w-full justify-center pt-8 pb-4">
-                                <ShimmerButton asChild className="shadow-2xl" shimmerSize="2px" shimmerColor="rgba(255,255,255,0.9)" background="rgba(38, 38, 38, 1)">
-                                    <Link href="/login">
-                                        <span className="text-center text-sm font-medium leading-none tracking-tight text-white whitespace-nowrap lg:text-lg dark:from-white dark:to-slate-900/10">
-                                            Começar
-                                        </span>
-                                        <ChevronRight className="size-4 opacity-50" />
-                                    </Link>
-                                </ShimmerButton>
+                                <PatifyButton />
                             </div>
                         </div>
                         <Footer />
