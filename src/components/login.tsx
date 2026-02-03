@@ -57,7 +57,7 @@ export default function LoginPage() {
             <Link href="/" aria-label="ir para a página inicial">
               <LogoIcon />
             </Link>
-            <h1 className="mb-1 mt-4 text-xl font-semibold">Entrar no Visus</h1>
+            <h1 className="mb-1 mt-4 text-xl font-semibold">Entrar no Patified</h1>
             <p>Bem-vindo de volta! Entre para continuar.</p>
           </div>
 

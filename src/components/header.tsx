@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { VisusLogo } from '@/components/logo'
+import { PatifiedLogo } from '@/components/logo'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
@@ -30,8 +30,8 @@ export const HeroHeader = () => {
                                 href="/"
                                 aria-label="home"
                                 className="flex items-center gap-2">
-                                <VisusLogo />
-                                <span className="font-visus text-lg tracking-tight text-foreground">Visus</span>
+                                <PatifiedLogo className="h-11" />
+                                <span className="font-patified text-lg tracking-tight text-foreground">Patified</span>
                             </Link>
 
                             <button
@@ -59,7 +59,7 @@ export const HeroHeader = () => {
                                     size="sm"
                                     className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
                                     <Link href="/">
-                                        <span>Visus</span>
+                                        <span>Patified</span>
                                     </Link>
                                 </Button>
                             </div>

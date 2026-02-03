@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { VisusLogo } from '@/components/logo'
+import { PatifiedLogo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { signOut } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
@@ -35,8 +35,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-full flex-col">
           <div className="flex h-14 items-center justify-between gap-2 border-b border-border px-4 lg:justify-start">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <VisusLogo className="h-5" />
-              <span className="font-visus text-lg tracking-tight">Visus</span>
+              <PatifiedLogo className="h-11" />
+              <span className="font-patified text-lg tracking-tight">Patified</span>
             </Link>
             <Button
               variant="ghost"

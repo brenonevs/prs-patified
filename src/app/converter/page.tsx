@@ -66,7 +66,7 @@ export default function ConverterPage() {
     <main className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">PRS Visus</h1>
+          <h1 className="text-4xl font-bold mb-4">Patified</h1>
           <p className="text-gray-400 text-lg">
             Converta imagens de móveis e arquitetura em modelos 3D
           </p>

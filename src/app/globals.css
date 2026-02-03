@@ -27,7 +27,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-visus: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 
   --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite
     alternate;
@@ -111,9 +110,9 @@ body {
   }
 }
 
-.font-visus {
-  font-family: var(--font-visus);
-  font-weight: 300;
+.font-patified {
+  font-family: var(--font-patified), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
 }
 
 .spline-hero canvas {

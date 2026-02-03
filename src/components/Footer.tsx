@@ -1,17 +1,19 @@
 'use client'
 
-import { SiReact, SiNextdotjs, SiTypescript } from 'react-icons/si'
+import { GiDuck, GiGamepad, GiJoystick, GiTrophy, GiRetroController } from 'react-icons/gi'
 import LogoLoop from '@/components/ui/LogoLoop'
 
 const techLogos = [
-  { node: <SiReact />, title: 'React', href: 'https://react.dev' },
-  { node: <SiNextdotjs />, title: 'Next.js', href: 'https://nextjs.org' },
-  { node: <SiTypescript />, title: 'TypeScript', href: 'https://www.typescriptlang.org' }
+  { node: <GiDuck />, title: 'Pato', href: '#' },
+  { node: <GiGamepad />, title: 'Gamepad', href: '#' },
+  { node: <GiJoystick />, title: 'Joystick', href: '#' },
+  { node: <GiTrophy />, title: 'Troféu', href: '#' },
+  { node: <GiRetroController />, title: 'Controle retrô', href: '#' }
 ]
 
 export function Footer() {
   return (
-    <footer className="absolute inset-x-0 bottom-0 z-10 py-8" aria-label="Tecnologias utilizadas">
+    <footer className="absolute inset-x-0 bottom-0 z-10 py-8" aria-label="Ícones de pato e videogame">
       <div className="mx-auto max-w-[90rem] px-4 sm:px-6">
         <div className="relative overflow-hidden text-white/70" style={{ height: '80px' }}>
           <LogoLoop
@@ -22,7 +24,7 @@ export function Footer() {
             gap={48}
             hoverSpeed={0}
             scaleOnHover
-            ariaLabel="Tecnologias utilizadas"
+            ariaLabel="Ícones de pato e videogame"
             className="[&_.logoloop__node]:text-current"
           />
         </div>

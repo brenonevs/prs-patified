@@ -3,7 +3,7 @@
 import * as React from "react"
 import { IconDashboard, IconPhotoPlus } from "@tabler/icons-react"
 
-import { VisusLogo } from "@/components/logo"
+import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -50,8 +50,8 @@ export function AppSidebar({
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/dashboard" className="flex items-center gap-2">
-                <VisusLogo className="!size-5 shrink-0 text-sidebar-foreground" />
-                <span className="text-base font-semibold">Visus</span>
+                <PatifiedLogo className="!size-11 shrink-0 brightness-0 invert opacity-90" />
+                <span className="text-base font-semibold">Patified</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

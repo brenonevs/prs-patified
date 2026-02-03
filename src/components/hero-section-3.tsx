@@ -2,8 +2,9 @@ import React from 'react'
 import Link from 'next/link'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { HeroHeader } from './header'
-import { HeroSpline } from './HeroSpline'
+import { HeroLottieDuck } from './HeroLottieDuck'
 import PixelSnow from './PixelSnow'
+import TextCursor from './TextCursor'
 import TextType from './TextType'
 import { HeroLottieArrow } from './HeroLottieArrow'
 import { ChevronRight } from 'lucide-react'
@@ -32,6 +33,21 @@ export default function HeroSection() {
                         </div>
                         <div
                             aria-hidden
+                            className="pointer-events-none absolute inset-0 z-[2]"
+                        >
+                            <TextCursor
+                                text="🐤"
+                                spacing={160}
+                                followMouseDirection
+                                randomFloat
+                                floatAmount={0.25}
+                                exitDuration={0.6}
+                                removalInterval={35}
+                                maxPoints={6}
+                            />
+                        </div>
+                        <div
+                            aria-hidden
                             className="pointer-events-none absolute inset-0 z-[1]"
                         >
                             <PixelSnow
@@ -52,14 +68,14 @@ export default function HeroSection() {
                         <div className="relative z-10 mx-auto w-full max-w-[90rem] px-4 sm:pl-6">
                             <div className="flex items-center justify-between max-md:flex-col gap-4 md:gap-6">
                                 <div className="w-full max-w-6xl min-w-0 shrink md:min-w-[32rem] lg:min-w-[40rem] max-sm:px-2">
-                                    <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">Do rascunho à realidade 3D em segundos.</h1>
+                                    <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">Prove que seu amigo é um patinho. QUACK QUACK!</h1>
                                     <TextType
                                         as="p"
                                         text={[
-                                            'Converta imagens em modelos 3D com um clique.',
-                                            'Transforme fotos em modelos 3D em segundos.',
-                                            'Do esboço ao modelo 3D. Simples e rápido.',
-                                            'Upload, converta e baixe seu modelo 3D.'
+                                            'Registre vitórias e deixe claro quem virou pato.',
+                                            'Zoe os amigos quando eles levarem a pior.',
+                                            'Quem ganhou na moral? Quem virou pato? Você registra.',
+                                            'Patifique o amigo que perdeu e comemore a zoeira.'
                                         ]}
                                         className="block w-full min-h-[1.5em] text-xl text-muted-foreground mt-4 text-balance"
                                         typingSpeed={120}
@@ -75,7 +91,7 @@ export default function HeroSection() {
                                     className="spline-hero relative -mt-16 h-[520px] w-full max-w-3xl bg-transparent max-md:mx-auto max-md:h-[420px] max-md:-mt-10"
                                     style={{ background: 'transparent' }}
                                 >
-                                    <HeroSpline />
+                                    <HeroLottieDuck />
                                 </div>
                             </div>
                             <div className="relative z-10 flex w-full justify-center pt-8 pb-4">
