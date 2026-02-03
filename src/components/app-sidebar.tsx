@@ -50,7 +50,7 @@ export function AppSidebar({
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/dashboard" className="flex items-center gap-2">
-                <PatifiedLogo className="!size-11 shrink-0 brightness-0 invert opacity-90" />
+                <PatifiedLogo className="!size-8 shrink-0 brightness-0 invert opacity-90" />
                 <span className="text-base font-semibold">Patified</span>
               </a>
             </SidebarMenuButton>

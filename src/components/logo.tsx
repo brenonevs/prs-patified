@@ -5,9 +5,9 @@ export const PatifiedLogo = ({ className }: { className?: string }) => (
   <Image
     src="/images/duck.svg"
     alt=""
-    width={44}
-    height={44}
-    className={cn('h-11 w-auto brightness-0 invert', className)}
+    width={32}
+    height={32}
+    className={cn('size-8 w-auto brightness-0 invert', className)}
     aria-hidden
   />
 )
