@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { IconDashboard, IconPhotoPlus } from "@tabler/icons-react"
+import { IconDashboard, IconTrophy, IconClipboardList } from "@tabler/icons-react"
 
 import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
@@ -24,7 +24,8 @@ const defaultUser = {
 
 const navMainItems = [
   { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
-  { title: "Converter", url: "/converter", icon: IconPhotoPlus },
+  { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: IconClipboardList },
+  { title: "Ranking", url: "/dashboard/ranking", icon: IconTrophy },
 ]
 
 type SidebarUser = {
@@ -39,7 +40,7 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & {
   user?: SidebarUser | null;
 }) {
-  const displayUser = user ?? data.user;
+  const displayUser = user ?? defaultUser;
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

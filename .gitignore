@@ -41,3 +41,5 @@ next-env.d.ts
 
 /functions
 /secrets
+/scripts
+/images

@@ -16,6 +16,8 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  partidasCriadas Partida[]       @relation("PartidaCreatedBy")
+  podiumResults  PartidaPodium[]  @relation("PodiumUser")
 
   @@map("user")
 }
@@ -62,4 +64,28 @@ model Verification {
   updatedAt DateTime?
 
   @@map("verification")
+}
+
+model Partida {
+  id          String   @id @default(cuid())
+  jogo        String
+  fotoUrl     String?
+  createdAt   DateTime @default(now())
+  createdById String
+  createdBy   User     @relation("PartidaCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  podium      PartidaPodium[]
+
+  @@map("partida")
+}
+
+model PartidaPodium {
+  id         String   @id @default(cuid())
+  partidaId  String
+  partida    Partida  @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+  posicao    Int
+  userId     String?
+  user       User?    @relation("PodiumUser", fields: [userId], references: [id], onDelete: SetNull)
+  playerName String
+
+  @@map("partida_podium")
 }

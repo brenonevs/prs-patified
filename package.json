@@ -2,6 +2,7 @@
   "name": "prs-visus",
   "version": "1.0.0",
   "description": "Projeto que converte imagens em modelos 3D",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -29,6 +30,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@google-cloud/storage": "^7.18.0",
+    "@google/genai": "^1.39.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@radix-ui/react-label": "^2.1.8",
