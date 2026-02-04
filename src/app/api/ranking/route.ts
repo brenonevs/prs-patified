@@ -3,8 +3,17 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const PONTOS_POR_PATIFICADA = 3;
-const PONTOS_POR_VEZ_PATIFICADO = -1;
+const PONTOS_POR_POSICAO: Record<number, number> = {
+  1: 5,  
+  2: 3,  
+  3: 2, 
+  4: 1,  
+  // 5º+ lugar: 0 pontos
+};
+
+function getPontosPorPosicao(posicao: number): number {
+  return PONTOS_POR_POSICAO[posicao] ?? 0;
+}
 
 export async function GET() {
   const podiumByUser = await prisma.partidaPodium.findMany({
@@ -17,20 +26,28 @@ export async function GET() {
 
   const byUserId = new Map<
     string,
-    { name: string; jogo: string; patificadas: number; vezesPatificado: number; cheatAttempts: number }
+    {
+      name: string;
+      jogo: string;
+      patificadas: number;
+      vezesPatificado: number;
+      cheatAttempts: number;
+      pontos: number;
+    }
   >();
 
   for (const p of podiumByUser) {
     if (!p.userId || !p.user) continue;
     const current = byUserId.get(p.userId);
-    const patificadas = (current?.patificadas ?? 0) + (p.posicao === 1 ? 1 : 0);
-    const vezesPatificado = (current?.vezesPatificado ?? 0) + (p.posicao >= 2 ? 1 : 0);
+    const pontosDaPosicao = getPontosPorPosicao(p.posicao);
+
     byUserId.set(p.userId, {
       name: p.user.steamUsername ?? p.user.name,
       jogo: current?.jogo ?? p.partida.jogo,
-      patificadas,
-      vezesPatificado,
+      patificadas: (current?.patificadas ?? 0) + (p.posicao === 1 ? 1 : 0),
+      vezesPatificado: (current?.vezesPatificado ?? 0) + (p.posicao >= 2 ? 1 : 0),
       cheatAttempts: p.user.cheatAttempts ?? 0,
+      pontos: (current?.pontos ?? 0) + pontosDaPosicao,
     });
   }
 
@@ -42,9 +59,7 @@ export async function GET() {
       patificadas: data.patificadas,
       vezesPatificado: data.vezesPatificado,
       cheatAttempts: data.cheatAttempts,
-      pontos:
-        PONTOS_POR_PATIFICADA * data.patificadas +
-        PONTOS_POR_VEZ_PATIFICADO * data.vezesPatificado,
+      pontos: data.pontos,
     }))
     .sort((a, b) => b.pontos - a.pontos)
     .map((row, index) => ({ ...row, rank: index + 1 }));

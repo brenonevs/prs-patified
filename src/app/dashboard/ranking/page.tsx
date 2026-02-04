@@ -25,8 +25,13 @@ import {
 import { cn } from "@/lib/utils"
 import { IconInfoCircle, IconLoader2 } from "@tabler/icons-react"
 
-const PONTOS_POR_PATIFICADA = 3
-const PONTOS_POR_VEZ_PATIFICADO = -1
+const PONTOS_POR_POSICAO = [
+  { posicao: "1º lugar", pontos: 5 },
+  { posicao: "2º lugar", pontos: 3 },
+  { posicao: "3º lugar", pontos: 2 },
+  { posicao: "4º lugar", pontos: 1 },
+  { posicao: "5º+ lugar", pontos: 0 },
+]
 
 type RankingRow = {
   userId: string
@@ -129,8 +134,18 @@ export default function RankingPage() {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="max-w-[280px]">
-                        +{PONTOS_POR_PATIFICADA} pontos por patificada, {PONTOS_POR_VEZ_PATIFICADO} por
-                        vez patificado. O ranking segue a ordem dos pontos. 🐤
+                        <div className="space-y-1">
+                          <p className="font-medium">Pontos por posição:</p>
+                          {PONTOS_POR_POSICAO.map((p) => (
+                            <div key={p.posicao} className="flex justify-between gap-4 text-xs">
+                              <span>{p.posicao}</span>
+                              <span className="font-mono">+{p.pontos}</span>
+                            </div>
+                          ))}
+                          <p className="pt-1 text-xs text-muted-foreground">
+                            O ranking segue a ordem dos pontos. 🐤
+                          </p>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </span>
