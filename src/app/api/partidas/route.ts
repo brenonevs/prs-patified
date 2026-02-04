@@ -320,6 +320,19 @@ export async function POST(request: NextRequest) {
     include: { podium: true },
   });
 
+  if (cheatingDetected && correctedRanking && correctedRanking.length > 0) {
+    await prisma.cheatAttemptLog.create({
+      data: {
+        userId: session.user.id,
+        partidaId: partida.id,
+        rankingEnviado: originalRanking,
+        rankingIdentificado: correctedRanking,
+        fotoUrl: imageUrl,
+        jogo: jogo.trim(),
+      },
+    });
+  }
+
   return NextResponse.json({
     ...partida,
     cheatingDetected,

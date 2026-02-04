@@ -41,6 +41,7 @@ model User {
   proposedRankings    LobbyProposedRanking[] @relation("ProposedRankings")
   rankedInProposals   LobbyProposedRanking[] @relation("RankedInProposal")
   lobbyVotes          LobbyVote[]
+  cheatAttemptLogs    CheatAttemptLog[]
 
   @@map("user")
 }
@@ -169,8 +170,26 @@ model Partida {
   createdBy   User     @relation("PartidaCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   podium      PartidaPodium[]
   lobby       Lobby?
+  cheatAttemptLog CheatAttemptLog?
 
   @@map("partida")
+}
+
+model CheatAttemptLog {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partidaId           String   @unique
+  partida             Partida  @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+  rankingEnviado      Json     // string[] – ordem que o usuário informou
+  rankingIdentificado Json    // string[] – ordem detectada na foto pela IA
+  fotoUrl             String
+  jogo                String
+  createdAt           DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("cheat_attempt_log")
 }
 
 model PartidaPodium {

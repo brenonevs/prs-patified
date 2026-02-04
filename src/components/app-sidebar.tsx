@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, Trophy, ClipboardList, Image, Users } from "lucide-react"
+import { LayoutDashboard, Trophy, ClipboardList, Image, Users, AlertTriangle } from "lucide-react"
 
 import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
@@ -28,6 +28,7 @@ const navMainItems = [
   { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: ClipboardList },
   { title: "Biblioteca de Patificadas", url: "/dashboard/biblioteca-patificadas", icon: Image },
   { title: "Ranking", url: "/dashboard/ranking", icon: Trophy },
+  { title: "Log de trapaças", url: "/dashboard/log-trapacas", icon: AlertTriangle },
 ]
 
 type SidebarUser = {
