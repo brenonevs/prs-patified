@@ -43,7 +43,7 @@ export async function POST(
   }
 
   const isParticipant = lobby.participants.some(
-    (p) => p.userId === session.user.id
+    (p: { userId: string }) => p.userId === session.user.id
   );
   if (!isParticipant) {
     return NextResponse.json({ error: "Você não está neste lobby." }, { status: 403 });
