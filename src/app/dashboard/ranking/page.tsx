@@ -34,7 +34,7 @@ const PONTOS_POR_POSICAO = [
 ]
 
 type RankingRow = {
-  userId: string
+  userId: string | null
   name: string
   jogo: string
   patificadas: number
@@ -42,6 +42,7 @@ type RankingRow = {
   cheatAttempts: number
   pontos: number
   rank: number
+  isGuest: boolean
 }
 
 const top3Medals = ["🥇", "🥈", "🥉"] as const
@@ -210,7 +211,7 @@ export default function RankingPage() {
                       <TableBody>
                         {ranking.map((row) => (
                           <TableRow
-                            key={row.userId}
+                            key={row.userId ?? `guest-${row.name}`}
                             className={cn(
                               "transition-colors",
                               row.rank === 1 &&
@@ -243,6 +244,11 @@ export default function RankingPage() {
                                     </span>
                                   )}
                                   {row.name}
+                                  {row.isGuest && (
+                                    <span className="text-xs text-muted-foreground font-normal">
+                                      (convidado)
+                                    </span>
+                                  )}
                                 </span>
                                 <span
                                   className={cn(
