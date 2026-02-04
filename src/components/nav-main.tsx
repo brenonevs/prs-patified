@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import type { Icon } from "@tabler/icons-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -11,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { cn } from "@/lib/utils"
 
 export function NavMain({
   items,
@@ -28,21 +28,23 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => {
+          {items.map((item, index) => {
             const isActive = pathname === item.url
             return (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  asChild
-                  isActive={isActive}
-                >
-                  <Link href={item.url}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <React.Fragment key={item.title}>
+                <SidebarMenuItem className="border-b border-sidebar-border/40 last:border-b-0">
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    asChild
+                    isActive={isActive}
+                  >
+                    <Link href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </React.Fragment>
             )
           })}
         </SidebarMenu>

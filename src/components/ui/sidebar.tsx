@@ -170,7 +170,8 @@ function Sidebar({
       <div
         data-slot="sidebar"
         className={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col border-r border-sidebar-border shadow-[2px_0_10px_rgba(0,0,0,0.06)]",
+          side === "right" && "border-r-0 border-l shadow-[-2px_0_10px_rgba(0,0,0,0.06)]",
           className
         )}
         {...props}
@@ -244,7 +245,13 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className={cn(
+            "bg-sidebar flex h-full w-full flex-col",
+            "group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm",
+            "group-data-[variant=inset]:border-r group-data-[variant=sidebar]:border-r group-data-[side=right]:border-r-0 group-data-[side=right]:border-l border-sidebar-border",
+            "group-data-[variant=inset]:shadow-[2px_0_10px_rgba(0,0,0,0.06)] group-data-[variant=sidebar]:shadow-[2px_0_10px_rgba(0,0,0,0.06)]",
+            "group-data-[side=right]:shadow-[-2px_0_10px_rgba(0,0,0,0.06)]"
+          )}
         >
           {children}
         </div>

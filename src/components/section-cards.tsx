@@ -5,6 +5,7 @@ import {
   IconMoodSmile,
   IconRocket,
   IconTrophy,
+  IconPodium,
 } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,8 @@ export type PatifyStats = {
   vezesPatificou: number
   totalPartidas: number
   sequenciaAtual: number
+  rank?: number | null
+  totalRanking?: number | null
 }
 
 const defaultStats: PatifyStats = {
@@ -29,14 +32,22 @@ const defaultStats: PatifyStats = {
   vezesPatificou: 0,
   totalPartidas: 0,
   sequenciaAtual: 0,
+  rank: null,
+  totalRanking: null,
 }
 
 export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) {
-  const { vezesPatificado, vezesPatificou, totalPartidas, sequenciaAtual } =
-    stats
+  const {
+    vezesPatificado,
+    vezesPatificou,
+    totalPartidas,
+    sequenciaAtual,
+    rank,
+    totalRanking,
+  } = stats
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Vezes que patifiquei</CardDescription>
@@ -110,6 +121,29 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
             Partidas seguidas nesta temporada
+          </div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Meu ranking</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {rank != null && totalRanking != null
+              ? `${rank}º de ${totalRanking}`
+              : rank != null
+                ? `${rank}º`
+                : "—"}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline" className="gap-1">
+              <IconPodium className="size-3.5" />
+              Posição
+            </Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="text-muted-foreground">
+            Sua posição no ranking geral por pontos
           </div>
         </CardFooter>
       </Card>
