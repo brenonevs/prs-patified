@@ -19,6 +19,7 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
+  IconClipboardOff,
   IconDotsVertical,
   IconGripVertical,
   IconLayoutColumns,
@@ -26,6 +27,7 @@ import {
 } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -316,9 +318,14 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                 <TableRow>
                   <TableCell
                     colSpan={partidasColumns.length}
-                    className="h-24 text-center"
+                    className="p-0 align-middle"
                   >
-                    Nenhuma partida registrada.
+                    <EmptyState
+                      title="Nenhuma partida registrada"
+                      description="As partidas em que você patificou ou foi patificado aparecerão aqui."
+                      icon={<IconClipboardOff className="size-7" />}
+                      minHeight="min-h-[200px]"
+                    />
                   </TableCell>
                 </TableRow>
               )}

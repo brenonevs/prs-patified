@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { IconDashboard, IconTrophy, IconClipboardList } from "@tabler/icons-react"
+import { IconDashboard, IconTrophy, IconClipboardList, IconPhoto } from "@tabler/icons-react"
 
 import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
@@ -25,6 +25,7 @@ const defaultUser = {
 const navMainItems = [
   { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
   { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: IconClipboardList },
+  { title: "Biblioteca de Patificadas", url: "/dashboard/biblioteca-patificadas", icon: IconPhoto },
   { title: "Ranking", url: "/dashboard/ranking", icon: IconTrophy },
 ]
 
