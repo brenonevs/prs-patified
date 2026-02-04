@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SiteHeader } from "@/components/site-header";
 import { Users, Plus, ArrowRight } from "lucide-react";
 
 export default function LobbyHubPage() {
@@ -61,7 +62,9 @@ export default function LobbyHubPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center p-6">
+    <>
+      <SiteHeader title="Lobbies" />
+      <div className="flex flex-1 flex-col items-center justify-center p-6">
       <div className="flex w-full max-w-2xl flex-col gap-8">
         <div className="text-center">
           <h1 className="text-2xl font-semibold">Lobbies</h1>
@@ -128,6 +131,7 @@ export default function LobbyHubPage() {
         </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

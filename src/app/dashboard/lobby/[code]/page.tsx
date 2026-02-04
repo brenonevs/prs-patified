@@ -7,6 +7,7 @@ import { getPusherClient, getLobbyChannelName } from "@/lib/pusher-client";
 import { LobbyWaiting } from "@/components/lobby/LobbyWaiting";
 import { LobbyInProgress } from "@/components/lobby/LobbyInProgress";
 import { LobbyVoting } from "@/components/lobby/LobbyVoting";
+import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import type { Participant } from "@/components/lobby/ParticipantList";
 
@@ -115,49 +116,61 @@ export default function LobbyRoomPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-muted-foreground">Carregando…</p>
-      </div>
+      <>
+        <SiteHeader title="Lobby" />
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <p className="text-muted-foreground">Carregando…</p>
+        </div>
+      </>
     );
   }
 
   if (error || !lobby) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
-        <p className="text-destructive">{error || "Lobby não encontrado."}</p>
-        <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
-          Voltar aos lobbies
-        </Button>
-      </div>
+      <>
+        <SiteHeader title="Lobby" />
+        <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
+          <p className="text-destructive">{error || "Lobby não encontrado."}</p>
+          <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
+            Voltar aos lobbies
+          </Button>
+        </div>
+      </>
     );
   }
 
   if (lobby.status === "COMPLETED") {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
-        <p className="text-lg font-medium">Partida registrada com sucesso!</p>
-        {lobby.partidaId && (
-          <Button onClick={() => router.push("/dashboard/ranking")}>
-            Ver ranking
+      <>
+        <SiteHeader title={`Sala ${lobby.code}`} />
+        <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
+          <p className="text-lg font-medium">Partida registrada com sucesso!</p>
+          {lobby.partidaId && (
+            <Button onClick={() => router.push("/dashboard/ranking")}>
+              Ver ranking
+            </Button>
+          )}
+          <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
+            Voltar aos lobbies
           </Button>
-        )}
-        <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
-          Voltar aos lobbies
-        </Button>
-      </div>
+        </div>
+      </>
     );
   }
 
   if (lobby.status === "CANCELLED" || lobby.status === "EXPIRED") {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
-        <p className="text-muted-foreground">
-          Este lobby foi {lobby.status === "CANCELLED" ? "cancelado" : "expirado"}.
-        </p>
-        <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
-          Voltar aos lobbies
-        </Button>
-      </div>
+      <>
+        <SiteHeader title={`Sala ${lobby.code}`} />
+        <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
+          <p className="text-muted-foreground">
+            Este lobby foi {lobby.status === "CANCELLED" ? "cancelado" : "expirado"}.
+          </p>
+          <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
+            Voltar aos lobbies
+          </Button>
+        </div>
+      </>
     );
   }
 
@@ -165,9 +178,11 @@ export default function LobbyRoomPage() {
 
   if (lobby.status === "WAITING") {
     return (
-      <div className="p-6 max-w-xl mx-auto">
-        <h1 className="text-xl font-semibold mb-4">Sala {lobby.code}</h1>
-        <LobbyWaiting
+      <>
+        <SiteHeader title={`Sala ${lobby.code}`} />
+        <div className="p-6 max-w-xl mx-auto">
+          <h1 className="text-xl font-semibold mb-4">Sala {lobby.code}</h1>
+          <LobbyWaiting
           lobbyId={lobby.id}
           code={lobby.code}
           jogo={lobby.jogo}
@@ -178,15 +193,18 @@ export default function LobbyRoomPage() {
           onLeave={handleLeave}
           onLobbyUpdated={fetchLobby}
         />
-      </div>
+        </div>
+      </>
     );
   }
 
   if (lobby.status === "IN_PROGRESS") {
     return (
-      <div className="p-6 max-w-xl mx-auto">
-        <h1 className="text-xl font-semibold mb-4">Partida em andamento</h1>
-        <LobbyInProgress
+      <>
+        <SiteHeader title={`Sala ${lobby.code}`} />
+        <div className="p-6 max-w-xl mx-auto">
+          <h1 className="text-xl font-semibold mb-4">Partida em andamento</h1>
+          <LobbyInProgress
           lobbyId={lobby.id}
           code={lobby.code}
           jogo={lobby.jogo}
@@ -197,15 +215,18 @@ export default function LobbyRoomPage() {
           onLeave={handleLeave}
           onLobbyUpdated={fetchLobby}
         />
-      </div>
+        </div>
+      </>
     );
   }
 
   if (lobby.status === "VOTING") {
     return (
-      <div className="p-6 max-w-xl mx-auto">
-        <h1 className="text-xl font-semibold mb-4">Votação do ranking</h1>
-        <LobbyVoting
+      <>
+        <SiteHeader title={`Sala ${lobby.code}`} />
+        <div className="p-6 max-w-xl mx-auto">
+          <h1 className="text-xl font-semibold mb-4">Votação do ranking</h1>
+          <LobbyVoting
           lobbyId={lobby.id}
           code={lobby.code}
           jogo={lobby.jogo}
@@ -219,13 +240,17 @@ export default function LobbyRoomPage() {
           onLeave={handleLeave}
           onLobbyUpdated={fetchLobby}
         />
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="p-6">
-      <p className="text-muted-foreground">Estado desconhecido: {lobby.status}</p>
-    </div>
+    <>
+      <SiteHeader title={`Sala ${lobby.code}`} />
+      <div className="p-6">
+        <p className="text-muted-foreground">Estado desconhecido: {lobby.status}</p>
+      </div>
+    </>
   );
 }
