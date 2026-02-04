@@ -15,7 +15,7 @@ export async function GET() {
 
   const podiumResults = await prisma.partidaPodium.findMany({
     where: { userId },
-    include: { partida: { orderBy: { createdAt: "desc" } } },
+    include: { partida: { select: { createdAt: true } } },
     orderBy: { partida: { createdAt: "desc" } },
   });
 

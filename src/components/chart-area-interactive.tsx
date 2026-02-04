@@ -29,26 +29,15 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const description = "Gráfico de partidas ao longo do tempo"
 
-const chartData = [
-  { date: "2025-01-20", fuiPatificado: 1, patifiquei: 2 },
-  { date: "2025-01-21", fuiPatificado: 0, patifiquei: 1 },
-  { date: "2025-01-22", fuiPatificado: 2, patifiquei: 1 },
-  { date: "2025-01-23", fuiPatificado: 1, patifiquei: 0 },
-  { date: "2025-01-24", fuiPatificado: 1, patifiquei: 2 },
-  { date: "2025-01-25", fuiPatificado: 0, patifiquei: 1 },
-  { date: "2025-01-26", fuiPatificado: 2, patifiquei: 1 },
-  { date: "2025-01-27", fuiPatificado: 1, patifiquei: 1 },
-  { date: "2025-01-28", fuiPatificado: 1, patifiquei: 0 },
-  { date: "2025-01-29", fuiPatificado: 0, patifiquei: 2 },
-  { date: "2025-01-30", fuiPatificado: 2, patifiquei: 1 },
-  { date: "2025-01-31", fuiPatificado: 1, patifiquei: 1 },
-  { date: "2025-02-01", fuiPatificado: 1, patifiquei: 2 },
-  { date: "2025-02-02", fuiPatificado: 0, patifiquei: 1 },
-  { date: "2025-02-03", fuiPatificado: 1, patifiquei: 1 },
-]
+type ChartDataPoint = {
+  date: string
+  fuiPatificado: number
+  patifiquei: number
+}
 
 const chartConfig = {
   date: {
@@ -67,6 +56,8 @@ const chartConfig = {
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
+  const [chartData, setChartData] = React.useState<ChartDataPoint[]>([])
+  const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     if (isMobile) {
@@ -74,7 +65,15 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile])
 
-  const referenceDate = new Date("2025-02-03")
+  React.useEffect(() => {
+    fetch("/api/stats/chart")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: ChartDataPoint[]) => setChartData(data))
+      .catch(() => setChartData([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const referenceDate = new Date()
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date)
     let daysToSubtract = 90
@@ -130,6 +129,13 @@ export function ChartAreaInteractive() {
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        {loading ? (
+          <Skeleton className="h-[250px] w-full" />
+        ) : filteredData.length === 0 ? (
+          <div className="flex h-[250px] items-center justify-center text-muted-foreground">
+            Nenhuma partida registrada ainda
+          </div>
+        ) : (
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
@@ -210,6 +216,7 @@ export function ChartAreaInteractive() {
             />
           </AreaChart>
         </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )
