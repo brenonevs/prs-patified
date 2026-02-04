@@ -10,7 +10,7 @@ import {
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
-  type ColumnVisibilityState,
+  type VisibilityState,
   type SortingState,
 } from "@tanstack/react-table"
 import {
@@ -174,7 +174,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
     { id: "data", desc: true },
   ])
   const [columnVisibility, setColumnVisibility] =
-    React.useState<ColumnVisibilityState>({})
+    React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const [pagination, setPagination] = React.useState({

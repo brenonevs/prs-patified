@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Lottie from 'lottie-react'
+import { useEffect, useRef, useState } from 'react'
+import Lottie, { type LottieRef } from 'lottie-react'
 
 export function HeroLottieArrow() {
     const [animationData, setAnimationData] = useState<object | null>(null)
+    const lottieRef: LottieRef = useRef(null)
 
     useEffect(() => {
         fetch('/animations/arrow-arc.json')
@@ -28,7 +29,8 @@ export function HeroLottieArrow() {
             <Lottie
                 animationData={animationData}
                 loop
-                speed={0.45}
+                lottieRef={lottieRef}
+                onDOMLoaded={() => lottieRef.current?.setSpeed(0.45)}
                 style={{ width: 340, height: 340 }}
             />
         </div>

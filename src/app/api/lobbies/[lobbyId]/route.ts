@@ -47,7 +47,7 @@ export async function GET(
   }
 
   const isParticipant = lobby.participants.some(
-    (p) => p.userId === session.user.id
+    (p: { userId: string }) => p.userId === session.user.id
   );
   if (!isParticipant) {
     return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
