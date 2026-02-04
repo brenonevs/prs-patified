@@ -7,6 +7,73 @@ export const dynamic = "force-dynamic";
 
 const VALIDATION_API_URL = "https://prs-patified-575184900812.southamerica-east1.run.app";
 
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, 
+          matrix[i][j - 1] + 1,     
+          matrix[i - 1][j] + 1      
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+function stringSimilarity(a: string, b: string): number {
+  const aLower = a.toLowerCase();
+  const bLower = b.toLowerCase();
+
+  if (aLower === bLower) return 1;
+
+  const maxLen = Math.max(aLower.length, bLower.length);
+  if (maxLen === 0) return 1;
+
+  const distance = levenshteinDistance(aLower, bLower);
+  return 1 - distance / maxLen;
+}
+
+function findBestMatch(
+  detectedName: string,
+  registeredUsers: { id: string; steamUsername: string | null }[]
+): { id: string; name: string; similarity: number } | null {
+  let bestMatch: { id: string; name: string; similarity: number } | null = null;
+
+  for (const user of registeredUsers) {
+    if (!user.steamUsername) continue;
+
+    const similarity = stringSimilarity(detectedName, user.steamUsername);
+
+    if (!bestMatch || similarity > bestMatch.similarity) {
+      bestMatch = {
+        id: user.id,
+        name: user.steamUsername,
+        similarity,
+      };
+    }
+  }
+
+  if (bestMatch && bestMatch.similarity >= 0.5) {
+    return bestMatch;
+  }
+
+  return null;
+}
+
 type ValidationResponse = {
   rankingCorreto: boolean;
   rankingCorrigido: string[];
@@ -149,22 +216,33 @@ export async function POST(request: NextRequest) {
         if (validation.rankingCorrigido && validation.rankingCorrigido.length > 0) {
           correctedRanking = validation.rankingCorrigido;
 
-          const nameToId = new Map(
-            users.map((u) => [u.steamUsername?.toLowerCase(), u.id])
-          );
+          const allUsers = await prisma.user.findMany({
+            where: { steamUsername: { not: null } },
+            select: { id: true, steamUsername: true },
+          });
 
-          console.log("Mapeamento nome->id:", Object.fromEntries(nameToId));
-          console.log("Nomes a mapear:", validation.rankingCorrigido);
+          console.log("Usuários disponíveis:", allUsers.map(u => u.steamUsername));
+          console.log("Nomes detectados pela IA:", validation.rankingCorrigido);
 
-          const correctedIds = validation.rankingCorrigido
-            .map((name) => nameToId.get(name.toLowerCase()))
-            .filter((id): id is string => id !== undefined);
+          const matchedResults = validation.rankingCorrigido.map((detectedName) => {
+            const match = findBestMatch(detectedName, allUsers);
+            console.log(`"${detectedName}" -> ${match ? `"${match.name}" (${(match.similarity * 100).toFixed(0)}%)` : "sem match"}`);
+            return match;
+          });
+
+          const correctedIds = matchedResults
+            .filter((m): m is NonNullable<typeof m> => m !== null)
+            .map((m) => m.id);
+
+          const correctedNames = matchedResults
+            .filter((m): m is NonNullable<typeof m> => m !== null)
+            .map((m) => m.name);
 
           console.log("IDs mapeados:", correctedIds);
 
           if (correctedIds.length >= 1) {
             finalUserIds = correctedIds;
-            finalPlayerNames = validation.rankingCorrigido;
+            finalPlayerNames = correctedNames;
           }
         }
       }
