@@ -225,8 +225,8 @@ export async function POST(request: NextRequest) {
     select: { id: true, steamUsername: true },
   });
   type UserSteamRow = { id: string; steamUsername: string | null };
-  const userMap = new Map(
-    users.map((u: UserSteamRow) => [u.id, u.steamUsername ?? "?"])
+  const userMap = new Map<string, string>(
+    users.map((u: UserSteamRow) => [u.id, u.steamUsername ?? "?"] as [string, string])
   );
 
   const playerNames = normalizedPodium.map((entry: PodiumEntry): string => {
