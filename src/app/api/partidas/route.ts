@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
     users.map((u: UserSteamRow) => [u.id, u.steamUsername ?? "?"])
   );
 
-  const playerNames = normalizedPodium.map((entry: PodiumEntry) => {
+  const playerNames: string[] = normalizedPodium.map((entry: PodiumEntry) => {
     if (entry.userId) {
       return userMap.get(entry.userId) ?? "?";
     }
