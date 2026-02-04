@@ -105,7 +105,9 @@ export async function POST(
   const votedUserIds = new Set(
     votesForVersion.map((v: { userId: string }) => v.userId)
   );
-  const allApproved = participantIds.every((id) => votedUserIds.has(id));
+  const allApproved = participantIds.every((id: string) =>
+    votedUserIds.has(id)
+  );
 
   if (!allApproved) {
     return NextResponse.json({ ok: true, status: "APPROVED", completed: false });
@@ -121,13 +123,14 @@ export async function POST(
     finalFotoUrl = await commitLobbyPhotoToProvas(lobby.fotoUrl);
   }
 
+  type RankingRow = { position: number; userId: string | null; playerName: string };
   const partida = await prisma.partida.create({
     data: {
       jogo: lobby.jogo,
       fotoUrl: finalFotoUrl ?? undefined,
       createdById: lobby.hostId,
       podium: {
-        create: rankingRows.map((r) => ({
+        create: rankingRows.map((r: RankingRow) => ({
           posicao: r.position,
           userId: r.userId,
           playerName: r.playerName,
