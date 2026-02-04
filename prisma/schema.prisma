@@ -6,6 +6,21 @@ datasource db {
   provider = "postgresql"
 }
 
+enum LobbyStatus {
+  WAITING
+  IN_PROGRESS
+  VOTING
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum VoteStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id            String    @id
   name          String
@@ -21,6 +36,11 @@ model User {
   accounts      Account[]
   partidasCriadas Partida[]       @relation("PartidaCreatedBy")
   podiumResults  PartidaPodium[]  @relation("PodiumUser")
+  hostedLobbies       Lobby[]                @relation("LobbyHost")
+  lobbyParticipations LobbyParticipant[]
+  proposedRankings    LobbyProposedRanking[] @relation("ProposedRankings")
+  rankedInProposals   LobbyProposedRanking[] @relation("RankedInProposal")
+  lobbyVotes          LobbyVote[]
 
   @@map("user")
 }
@@ -69,6 +89,77 @@ model Verification {
   @@map("verification")
 }
 
+model Lobby {
+  id              String       @id @default(cuid())
+  code            String       @unique
+  jogo            String
+  status          LobbyStatus  @default(WAITING)
+  hostId          String
+  host            User         @relation("LobbyHost", fields: [hostId], references: [id], onDelete: Cascade)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  expiresAt       DateTime
+  votingStartedAt DateTime?
+  votingExpiresAt DateTime?
+  fotoUrl         String?
+  participants    LobbyParticipant[]
+  proposedRanking LobbyProposedRanking[]
+  votes           LobbyVote[]
+  partidaId       String?      @unique
+  partida         Partida?     @relation(fields: [partidaId], references: [id])
+
+  @@index([code])
+  @@index([status])
+  @@map("lobby")
+}
+
+model LobbyParticipant {
+  id        String    @id @default(cuid())
+  lobbyId   String
+  lobby     Lobby     @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+  isReady   Boolean   @default(false)
+
+  @@unique([lobbyId, userId])
+  @@index([lobbyId])
+  @@map("lobby_participant")
+}
+
+model LobbyProposedRanking {
+  id           String   @id @default(cuid())
+  lobbyId      String
+  lobby        Lobby    @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  proposedById String
+  proposedBy   User     @relation("ProposedRankings", fields: [proposedById], references: [id])
+  position     Int
+  userId       String?
+  user         User?    @relation("RankedInProposal", fields: [userId], references: [id])
+  playerName   String
+  version      Int      @default(1)
+  createdAt    DateTime @default(now())
+
+  @@index([lobbyId, version])
+  @@map("lobby_proposed_ranking")
+}
+
+model LobbyVote {
+  id       String     @id @default(cuid())
+  lobbyId  String
+  lobby    Lobby      @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status   VoteStatus @default(PENDING)
+  version  Int
+  votedAt  DateTime?
+
+  @@unique([lobbyId, userId, version])
+  @@index([lobbyId])
+  @@map("lobby_vote")
+}
+
 model Partida {
   id          String   @id @default(cuid())
   jogo        String
@@ -77,6 +168,7 @@ model Partida {
   createdById String
   createdBy   User     @relation("PartidaCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   podium      PartidaPodium[]
+  lobby       Lobby?
 
   @@map("partida")
 }
