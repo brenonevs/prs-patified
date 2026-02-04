@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Lobby não encontrado" }, { status: 404 });
     }
     const isParticipant = lobby.participants.some(
-      (p) => p.userId === session.user.id
+      (p: { userId: string }) => p.userId === session.user.id
     );
     if (!isParticipant && !["COMPLETED", "CANCELLED", "EXPIRED"].includes(lobby.status)) {
       return NextResponse.json({ error: "Acesso negado" }, { status: 403 });

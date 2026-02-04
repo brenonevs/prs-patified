@@ -42,7 +42,7 @@ export async function POST(
   }
 
   const isParticipant = lobby.participants.some(
-    (p) => p.userId === session.user.id
+    (p: { userId: string }) => p.userId === session.user.id
   );
   if (!isParticipant) {
     return NextResponse.json({ error: "Você não está neste lobby." }, { status: 403 });
@@ -95,12 +95,16 @@ export async function POST(
     return NextResponse.json({ ok: true, status: "REJECTED" });
   }
 
-  const participantIds = lobby.participants.map((p) => p.userId);
+  const participantIds = lobby.participants.map(
+    (p: { userId: string }) => p.userId
+  );
   const votesForVersion = await prisma.lobbyVote.findMany({
     where: { lobbyId, version, status: "APPROVED" },
     select: { userId: true },
   });
-  const votedUserIds = new Set(votesForVersion.map((v) => v.userId));
+  const votedUserIds = new Set(
+    votesForVersion.map((v: { userId: string }) => v.userId)
+  );
   const allApproved = participantIds.every((id) => votedUserIds.has(id));
 
   if (!allApproved) {

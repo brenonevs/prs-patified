@@ -62,9 +62,15 @@ export async function POST(
   const sorted = [...ranking].sort(
     (a, b) => (a.position ?? 0) - (b.position ?? 0)
   );
-  const participantIds = new Set(lobby.participants.map((p) => p.userId));
+  type ParticipantWithUser = {
+    userId: string;
+    user: { id: string; steamUsername: string | null; name: string };
+  };
+  const participantIds = new Set(
+    lobby.participants.map((p: ParticipantWithUser) => p.userId)
+  );
   const namesByUserId = new Map(
-    lobby.participants.map((p) => [
+    lobby.participants.map((p: ParticipantWithUser) => [
       p.user.id,
       p.user.steamUsername ?? p.user.name ?? "?",
     ])

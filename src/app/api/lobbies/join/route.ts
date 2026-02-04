@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
     id: session.user.id,
     name: session.user.name ?? "Usuário",
     image: (session.user as { image?: string | null }).image ?? null,
-    steamUsername: (updated?.participants.find((p) => p.userId === session.user.id)?.user as { steamUsername?: string | null })?.steamUsername ?? null,
+    steamUsername: (updated?.participants.find((p: { userId: string; user: { steamUsername?: string | null } }) => p.userId === session.user.id)?.user as { steamUsername?: string | null })?.steamUsername ?? null,
   };
 
   if (pusher && updated) {
