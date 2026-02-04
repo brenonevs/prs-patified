@@ -18,8 +18,7 @@ const fredoka = Fredoka({
 
 export const metadata: Metadata = {
   title: "Patified - Patifique seus amigos",
-  description:
-    "Converta imagens de móveis e arquitetura em modelos 3D utilizando visão computacional",
+  description: "Patified - Patifique seus amigos",
 };
 
 export default function RootLayout({
