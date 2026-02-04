@@ -128,6 +128,7 @@ export async function GET() {
 
   type PartidaWithPodium = {
     id: string;
+    jogo: string;
     createdAt: Date;
     podium: { userId: string | null; posicao: number; playerName: string }[];
   };
@@ -138,12 +139,18 @@ export async function GET() {
     );
     if (!myPodium) return [];
     const tipo = myPodium.posicao === 1 ? "Patifiquei" : "Fui patificado";
+    const campeao = p.podium.find((pd: PodiumEntryRow) => pd.posicao === 1);
+    const ultimo = p.podium[p.podium.length - 1];
     return [
       {
         id: `${p.id}-${myPodium.posicao}`,
         data: p.createdAt.toISOString().slice(0, 10),
+        jogo: p.jogo,
         tipo,
-        resultado: "Vitória",
+        minhaPosicao: myPodium.posicao,
+        totalJogadores: p.podium.length,
+        campeao: campeao?.playerName ?? "—",
+        patinho: ultimo?.playerName ?? "—",
       },
     ];
   });

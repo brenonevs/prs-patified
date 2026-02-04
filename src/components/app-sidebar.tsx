@@ -24,10 +24,10 @@ const defaultUser = {
 
 const navMainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Lobbies", url: "/dashboard/lobby", icon: Users },
+  { title: "Ranking", url: "/dashboard/ranking", icon: Trophy },
   { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: ClipboardList },
   { title: "Biblioteca de Patificadas", url: "/dashboard/biblioteca-patificadas", icon: Image },
-  { title: "Ranking", url: "/dashboard/ranking", icon: Trophy },
+  { title: "Lobbies", url: "/dashboard/lobby", icon: Users },
   { title: "Log de trapaças", url: "/dashboard/log-trapacas", icon: AlertTriangle },
 ]
 
