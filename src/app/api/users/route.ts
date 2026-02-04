@@ -16,9 +16,10 @@ export async function GET() {
     orderBy: { steamUsername: "asc" },
   });
 
+  type UserRow = { id: string; steamUsername: string | null };
   return NextResponse.json(
     users
-      .filter((u) => u.steamUsername)
-      .map((u) => ({ id: u.id, name: u.steamUsername }))
+      .filter((u: UserRow) => u.steamUsername)
+      .map((u: UserRow) => ({ id: u.id, name: u.steamUsername }))
   );
 }

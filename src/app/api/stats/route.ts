@@ -69,7 +69,9 @@ export async function GET() {
     .map(([uid], index) => ({ userId: uid, rank: index + 1 }));
 
   const totalRanking = sorted.length;
-  const meuRank = sorted.find((r) => r.userId === userId)?.rank ?? null;
+  const meuRank = sorted.find(
+    (r: { userId: string; rank: number }) => r.userId === userId
+  )?.rank ?? null;
 
   return NextResponse.json({
     vezesPatificado,

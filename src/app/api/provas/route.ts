@@ -39,9 +39,23 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
+  type PartidaProvaRow = {
+    id: string;
+    jogo: string;
+    fotoUrl: string | null;
+    createdAt: Date;
+    createdBy: {
+      id: string;
+      name: string;
+      steamUsername: string | null;
+      image: string | null;
+    };
+    podium: { posicao: number; playerName: string }[];
+  };
+  type PodiumRow = { posicao: number; playerName: string };
   const provas = partidas
-    .filter((p) => p.fotoUrl)
-    .map((p) => ({
+    .filter((p: PartidaProvaRow) => p.fotoUrl)
+    .map((p: PartidaProvaRow) => ({
       id: p.id,
       url: p.fotoUrl,
       jogo: p.jogo,
@@ -51,7 +65,7 @@ export async function GET() {
         name: p.createdBy.steamUsername ?? p.createdBy.name,
         avatar: p.createdBy.image,
       },
-      podium: p.podium.map((pod) => ({
+      podium: p.podium.map((pod: PodiumRow) => ({
         posicao: pod.posicao,
         nome: pod.playerName,
       })),

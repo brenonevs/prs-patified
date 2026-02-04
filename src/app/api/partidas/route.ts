@@ -126,8 +126,16 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  const rows = partidas.flatMap((p) => {
-    const myPodium = p.podium.find((pd) => pd.userId === session.user!.id);
+  type PartidaWithPodium = {
+    id: string;
+    createdAt: Date;
+    podium: { userId: string | null; posicao: number; playerName: string }[];
+  };
+  type PodiumEntryRow = { userId: string | null; posicao: number; playerName: string };
+  const rows = partidas.flatMap((p: PartidaWithPodium) => {
+    const myPodium = p.podium.find(
+      (pd: PodiumEntryRow) => pd.userId === session.user!.id
+    );
     if (!myPodium) return [];
     const tipo = myPodium.posicao === 1 ? "Patifiquei" : "Fui patificado";
     return [
@@ -175,7 +183,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const normalizedPodium: PodiumEntry[] = podium.map((entry) => {
+  const normalizedPodium: PodiumEntry[] = podium.map((entry: string | PodiumEntry) => {
     if (typeof entry === "string") {
       return { userId: entry };
     }
@@ -191,7 +199,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const identifiers = normalizedPodium.map((e) =>
+  const identifiers = normalizedPodium.map((e: PodiumEntry) =>
     e.userId ?? e.playerName?.toLowerCase().trim()
   );
   if (new Set(identifiers).size !== identifiers.length) {
@@ -209,16 +217,19 @@ export async function POST(request: NextRequest) {
   }
 
   const userIds = normalizedPodium
-    .filter((e) => e.userId)
-    .map((e) => e.userId!);
+    .filter((e: PodiumEntry) => e.userId)
+    .map((e: PodiumEntry) => e.userId!);
 
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
     select: { id: true, steamUsername: true },
   });
-  const userMap = new Map(users.map((u) => [u.id, u.steamUsername ?? "?"]));
+  type UserSteamRow = { id: string; steamUsername: string | null };
+  const userMap = new Map(
+    users.map((u: UserSteamRow) => [u.id, u.steamUsername ?? "?"])
+  );
 
-  const playerNames = normalizedPodium.map((entry) => {
+  const playerNames = normalizedPodium.map((entry: PodiumEntry) => {
     if (entry.userId) {
       return userMap.get(entry.userId) ?? "?";
     }
@@ -240,7 +251,7 @@ export async function POST(request: NextRequest) {
       if (!validation.rankingCorreto && validation.rankingCorrigido && validation.rankingCorrigido.length > 0) {
         const isSameRanking =
           validation.rankingCorrigido.length === playerNames.length &&
-          validation.rankingCorrigido.every((name, i) =>
+          validation.rankingCorrigido.every((name: string, i: number) =>
             name.toLowerCase().trim() === playerNames[i].toLowerCase().trim()
           );
 
@@ -260,24 +271,29 @@ export async function POST(request: NextRequest) {
             select: { id: true, steamUsername: true },
           });
 
-          console.log("Usuários disponíveis:", allUsers.map(u => u.steamUsername));
+          console.log(
+            "Usuários disponíveis:",
+            allUsers.map((u: { steamUsername: string | null }) => u.steamUsername)
+          );
           console.log("Nomes detectados pela IA:", validation.rankingCorrigido);
 
-          const matchedResults = validation.rankingCorrigido.map((detectedName) => {
+          const matchedResults = validation.rankingCorrigido.map((detectedName: string) => {
             const match = findBestMatch(detectedName, allUsers);
             console.log(`"${detectedName}" -> ${match ? `"${match.name}" (${(match.similarity * 100).toFixed(0)}%)` : "sem match"}`);
             return match;
           });
 
-          finalPodium = matchedResults.map((match, index) => {
+          type MatchResult = { id: string; name: string; similarity: number } | null;
+          finalPodium = matchedResults.map((match: MatchResult, index: number) => {
             if (match) {
               return { userId: match.id };
             }
             return { playerName: validation.rankingCorrigido[index] };
           });
 
-          finalPlayerNames = matchedResults.map((match, index) =>
-            match?.name ?? validation.rankingCorrigido[index]
+          finalPlayerNames = matchedResults.map(
+            (match: MatchResult, index: number) =>
+              match?.name ?? validation.rankingCorrigido[index]
           );
 
           console.log("Pódio corrigido:", finalPodium);
@@ -294,7 +310,7 @@ export async function POST(request: NextRequest) {
       fotoUrl: imageUrl,
       createdById: session.user.id,
       podium: {
-        create: finalPodium.map((entry, index) => ({
+        create: finalPodium.map((entry: PodiumEntry, index: number) => ({
           posicao: index + 1,
           userId: entry.userId ?? null,
           playerName: finalPlayerNames[index] ?? entry.playerName ?? "?",

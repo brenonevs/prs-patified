@@ -28,7 +28,13 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  const items = partidas.map((p) => ({
+  type PartidaRow = {
+    id: string;
+    jogo: string;
+    fotoUrl: string | null;
+    createdAt: Date;
+  };
+  const items = partidas.map((p: PartidaRow) => ({
     id: p.id,
     jogo: p.jogo,
     fotoUrl: p.fotoUrl,
