@@ -21,7 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { Plus, Trash2 } from "lucide-react";
 
 export type RankingEntry = {
   id: string;
@@ -99,7 +99,7 @@ function SortableItem({
         onClick={() => onRemove(entry.id)}
         aria-label="Remover"
       >
-        <IconTrash className="size-4" />
+        <Trash2 className="size-4" />
       </Button>
     </li>
   );
@@ -228,7 +228,7 @@ export function RankingProposer({
           onClick={handleAddGuest}
           className="shrink-0"
         >
-          <IconPlus className="size-4 mr-1" />
+          <Plus className="size-4 mr-1" />
           Adicionar convidado
         </Button>
       </div>

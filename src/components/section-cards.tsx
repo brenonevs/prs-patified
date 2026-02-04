@@ -1,12 +1,12 @@
 "use client"
 
 import {
-  IconFlame,
-  IconMoodSmile,
-  IconRocket,
-  IconTrophy,
-  IconPodium,
-} from "@tabler/icons-react"
+  Flame,
+  Smile,
+  Rocket,
+  Trophy,
+  Medal,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -56,7 +56,7 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="gap-1">
-              <IconRocket className="size-3.5" />
+              <Rocket className="size-3.5" />
               Vitórias
             </Badge>
           </CardAction>
@@ -75,7 +75,7 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="gap-1">
-              <IconMoodSmile className="size-3.5" />
+              <Smile className="size-3.5" />
               Derrotas
             </Badge>
           </CardAction>
@@ -94,7 +94,7 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="gap-1">
-              <IconTrophy className="size-3.5" />
+              <Trophy className="size-3.5" />
               Geral
             </Badge>
           </CardAction>
@@ -113,7 +113,7 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="gap-1">
-              <IconFlame className="size-3.5" />
+              <Flame className="size-3.5" />
               Streak
             </Badge>
           </CardAction>
@@ -136,7 +136,7 @@ export function SectionCards({ stats = defaultStats }: { stats?: PatifyStats }) 
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="gap-1">
-              <IconPodium className="size-3.5" />
+              <Medal className="size-3.5" />
               Posição
             </Badge>
           </CardAction>

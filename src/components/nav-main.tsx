@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { Icon } from "@tabler/icons-react"
+import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -19,7 +19,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: Icon
+    icon?: LucideIcon
   }[]
 }) {
   const pathname = usePathname()

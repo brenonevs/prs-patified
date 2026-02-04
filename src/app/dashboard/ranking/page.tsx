@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { IconInfoCircle, IconLoader2 } from "@tabler/icons-react"
+import { Info, Loader2 } from "lucide-react"
 
 const PONTOS_POR_POSICAO = [
   { posicao: "1º lugar", pontos: 5 },
@@ -131,7 +131,7 @@ export default function RankingPage() {
                           className="inline-flex text-muted-foreground hover:text-foreground rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           aria-label="Explicação da pontuação"
                         >
-                          <IconInfoCircle className="size-4 shrink-0" />
+                          <Info className="size-4 shrink-0" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="max-w-[280px]">
@@ -161,7 +161,7 @@ export default function RankingPage() {
                 </div>
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
-                    <IconLoader2 className="size-8 animate-spin text-muted-foreground" />
+                    <Loader2 className="size-8 animate-spin text-muted-foreground" />
                   </div>
                 ) : ranking.length === 0 ? (
                   <div className="py-12 text-center text-muted-foreground">
@@ -195,7 +195,7 @@ export default function RankingPage() {
                                     className="inline-flex text-muted-foreground hover:text-foreground rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     aria-label="O que são trapaças?"
                                   >
-                                    <IconInfoCircle className="size-3.5 shrink-0" />
+                                    <Info className="size-3.5 shrink-0" />
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="max-w-[260px]">

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { IconChevronLeft, IconChevronRight, IconPhotoOff, IconTrophy } from "@tabler/icons-react"
+import { ChevronLeft, ChevronRight, ImageOff, Trophy } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import {
   Card,
@@ -133,7 +133,7 @@ export default function BibliotecaPatificadasPage() {
               <EmptyState
                 title="Não foi possível carregar"
                 description={error}
-                icon={<IconPhotoOff className="size-7" />}
+                icon={<ImageOff className="size-7" />}
                 minHeight="min-h-[320px]"
                 className="[&_p]:text-destructive [&_[data-slot=icon]]:bg-destructive/10 [&_[data-slot=icon]]:text-destructive"
               />
@@ -141,7 +141,7 @@ export default function BibliotecaPatificadasPage() {
               <EmptyState
                 title="Nenhuma foto na plataforma ainda"
                 description="Quando partidas forem cadastradas com foto de comprovação, elas aparecerão aqui."
-                icon={<IconPhotoOff className="size-7" />}
+                icon={<ImageOff className="size-7" />}
                 action={
                   <Button asChild variant="secondary" size="sm">
                     <Link href="/dashboard/cadastrar-partida">
@@ -190,7 +190,7 @@ export default function BibliotecaPatificadasPage() {
                           {/* Pódio resumido */}
                           {prova.podium.length > 0 && (
                             <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                              <IconTrophy className="size-3.5 shrink-0 mt-0.5" />
+                              <Trophy className="size-3.5 shrink-0 mt-0.5" />
                               <div className="flex flex-wrap gap-x-2 gap-y-0.5">
                                 {prova.podium.slice(0, 3).map((p) => (
                                   <span key={p.posicao}>
@@ -219,7 +219,7 @@ export default function BibliotecaPatificadasPage() {
                       onClick={() => goToPage(currentPage - 1)}
                       disabled={currentPage === 1}
                     >
-                      <IconChevronLeft className="size-4" />
+                      <ChevronLeft className="size-4" />
                       <span className="sr-only">Página anterior</span>
                     </Button>
 
@@ -259,7 +259,7 @@ export default function BibliotecaPatificadasPage() {
                       onClick={() => goToPage(currentPage + 1)}
                       disabled={currentPage === totalPages}
                     >
-                      <IconChevronRight className="size-4" />
+                      <ChevronRight className="size-4" />
                       <span className="sr-only">Próxima página</span>
                     </Button>
                   </div>

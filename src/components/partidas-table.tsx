@@ -14,17 +14,17 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import {
-  IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconClipboardOff,
-  IconDotsVertical,
-  IconGripVertical,
-  IconLayoutColumns,
-  IconPlus,
-} from "@tabler/icons-react"
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ClipboardX,
+  MoreVertical,
+  GripVertical,
+  LayoutGrid,
+  Plus,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -78,7 +78,7 @@ const partidasColumns: ColumnDef<PartidaRow>[] = [
         size="icon"
         className="text-muted-foreground size-7 hover:bg-transparent"
       >
-        <IconGripVertical className="text-muted-foreground size-3" />
+        <GripVertical className="text-muted-foreground size-3" />
         <span className="sr-only">Arrastar para reordenar</span>
       </Button>
     ),
@@ -153,7 +153,7 @@ const partidasColumns: ColumnDef<PartidaRow>[] = [
             className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
             size="icon"
           >
-            <IconDotsVertical />
+            <MoreVertical />
             <span className="sr-only">Abrir menu</span>
           </Button>
         </DropdownMenuTrigger>
@@ -236,10 +236,10 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <IconLayoutColumns />
+                <LayoutGrid />
                 <span className="hidden lg:inline">Personalizar colunas</span>
                 <span className="lg:hidden">Colunas</span>
-                <IconChevronDown />
+                <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -270,7 +270,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="outline" size="sm">
-            <IconPlus />
+            <Plus />
             <span className="hidden lg:inline">Adicionar</span>
           </Button>
         </div>
@@ -323,7 +323,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                     <EmptyState
                       title="Nenhuma partida registrada"
                       description="As partidas em que você patificou ou foi patificado aparecerão aqui."
-                      icon={<IconClipboardOff className="size-7" />}
+                      icon={<ClipboardX className="size-7" />}
                       minHeight="min-h-[200px]"
                     />
                   </TableCell>
@@ -374,7 +374,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                 disabled={!table.getCanPreviousPage()}
               >
                 <span className="sr-only">Primeira página</span>
-                <IconChevronsLeft />
+                <ChevronsLeft />
               </Button>
               <Button
                 variant="outline"
@@ -384,7 +384,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                 disabled={!table.getCanPreviousPage()}
               >
                 <span className="sr-only">Página anterior</span>
-                <IconChevronLeft />
+                <ChevronLeft />
               </Button>
               <Button
                 variant="outline"
@@ -394,7 +394,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                 disabled={!table.getCanNextPage()}
               >
                 <span className="sr-only">Próxima página</span>
-                <IconChevronRight />
+                <ChevronRight />
               </Button>
               <Button
                 variant="outline"
@@ -404,7 +404,7 @@ export function PartidasTable({ data }: { data: PartidaRow[] }) {
                 disabled={!table.getCanNextPage()}
               >
                 <span className="sr-only">Última página</span>
-                <IconChevronsRight />
+                <ChevronsRight />
               </Button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { IconDashboard, IconTrophy, IconClipboardList, IconPhoto, IconUsers } from "@tabler/icons-react"
+import { LayoutDashboard, Trophy, ClipboardList, Image, Users } from "lucide-react"
 
 import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
@@ -23,11 +23,11 @@ const defaultUser = {
 }
 
 const navMainItems = [
-  { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
-  { title: "Lobbies", url: "/dashboard/lobby", icon: IconUsers },
-  { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: IconClipboardList },
-  { title: "Biblioteca de Patificadas", url: "/dashboard/biblioteca-patificadas", icon: IconPhoto },
-  { title: "Ranking", url: "/dashboard/ranking", icon: IconTrophy },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Lobbies", url: "/dashboard/lobby", icon: Users },
+  { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: ClipboardList },
+  { title: "Biblioteca de Patificadas", url: "/dashboard/biblioteca-patificadas", icon: Image },
+  { title: "Ranking", url: "/dashboard/ranking", icon: Trophy },
 ]
 
 type SidebarUser = {

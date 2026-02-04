@@ -21,7 +21,7 @@ import {
 import { PlayerCombobox, type PlayerOption } from "@/components/ui/player-combobox"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { IconPlus, IconTrash, IconLoader2, IconAlertTriangle } from "@tabler/icons-react"
+import { Plus, Trash2, Loader2, AlertTriangle } from "lucide-react"
 
 type PodiumEntry = {
   type: "user" | "guest"
@@ -240,7 +240,7 @@ export default function CadastrarPartidaPage() {
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-4 md:px-6 md:py-5">
           {cheatingWarning && (
             <div className="mb-4 flex items-center gap-3 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-yellow-600 dark:text-yellow-400">
-              <IconAlertTriangle className="size-5 shrink-0" />
+              <AlertTriangle className="size-5 shrink-0" />
               <div>
                 <p className="font-semibold">Tentativa de trapaça detectada!</p>
                 <p className="text-sm opacity-90">
@@ -303,7 +303,7 @@ export default function CadastrarPartidaPage() {
                                   onClick={() => removerPosicao(index)}
                                   aria-label="Remover posição"
                                 >
-                                  <IconTrash className="size-4" />
+                                  <Trash2 className="size-4" />
                                 </Button>
                               )}
                             </div>
@@ -316,7 +316,7 @@ export default function CadastrarPartidaPage() {
                           className="w-full"
                           onClick={adicionarPosicao}
                         >
-                          <IconPlus className="size-4" />
+                          <Plus className="size-4" />
                           Adicionar posição
                         </Button>
                       </div>
@@ -380,7 +380,7 @@ export default function CadastrarPartidaPage() {
                       {isUploading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-background/50">
                           <div className="flex items-center gap-2 rounded-lg bg-background/90 px-4 py-2">
-                            <IconLoader2 className="size-5 animate-spin" />
+                            <Loader2 className="size-5 animate-spin" />
                             <span className="text-sm">Enviando...</span>
                           </div>
                         </div>
@@ -388,7 +388,7 @@ export default function CadastrarPartidaPage() {
                       {uploadError && !isUploading && (
                         <div className="absolute inset-0 flex items-center justify-center bg-background/50">
                           <div className="flex flex-col items-center gap-2 rounded-lg bg-background/90 px-4 py-3">
-                            <IconAlertTriangle className="size-5 text-destructive" />
+                            <AlertTriangle className="size-5 text-destructive" />
                             <span className="text-sm text-destructive">Falha no upload</span>
                             <Button
                               type="button"
@@ -420,7 +420,7 @@ export default function CadastrarPartidaPage() {
                           className="absolute top-2 right-2"
                           onClick={clearPhoto}
                         >
-                          <IconTrash className="size-4" />
+                          <Trash2 className="size-4" />
                         </Button>
                       )}
                     </div>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { IconUsers, IconPlus, IconArrowRight } from "@tabler/icons-react";
+import { Users, Plus, ArrowRight } from "lucide-react";
 
 export default function LobbyHubPage() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function LobbyHubPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <IconPlus className="size-5" />
+              <Plus className="size-5" />
               Criar lobby
             </CardTitle>
             <CardDescription>
@@ -98,7 +98,7 @@ export default function LobbyHubPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <IconUsers className="size-5" />
+              <Users className="size-5" />
               Entrar no lobby
             </CardTitle>
             <CardDescription>
@@ -121,7 +121,7 @@ export default function LobbyHubPage() {
                 onClick={handleJoin}
                 disabled={joinLoading || code.trim().length !== 6}
               >
-                <IconArrowRight className="size-4" />
+                <ArrowRight className="size-4" />
               </Button>
             </div>
           </CardContent>

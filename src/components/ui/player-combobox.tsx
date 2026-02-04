@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
-import { IconCheck, IconUser } from "@tabler/icons-react"
+import { Check, User } from "lucide-react"
 
 export type PlayerOption = {
   id: string
@@ -103,7 +103,7 @@ export function PlayerCombobox({
         />
         {isRegisteredUser && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 dark:text-green-400">
-            <IconCheck className="size-4" />
+            <Check className="size-4" />
           </span>
         )}
       </div>
@@ -123,10 +123,10 @@ export function PlayerCombobox({
                   "bg-accent text-accent-foreground"
               )}
             >
-              <IconUser className="size-4 text-muted-foreground" />
+              <User className="size-4 text-muted-foreground" />
               <span>{option.name}</span>
               {option.name.toLowerCase() === inputValue.toLowerCase() && (
-                <IconCheck className="ml-auto size-4" />
+                <Check className="ml-auto size-4" />
               )}
             </button>
           ))}

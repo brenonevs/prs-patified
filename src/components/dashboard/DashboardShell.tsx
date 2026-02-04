@@ -74,7 +74,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               className="w-full justify-start gap-3"
-              onClick={() => signOut({ fetchOptions: { onSuccess: () => window.location.href = '/' } })}
+              onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/' } } })}
             >
               <LogOut className="size-4" />
               Sair
