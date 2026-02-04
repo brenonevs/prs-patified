@@ -12,11 +12,13 @@ export async function GET() {
   }
 
   const users = await prisma.user.findMany({
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
+    select: { id: true, steamUsername: true },
+    orderBy: { steamUsername: "asc" },
   });
 
   return NextResponse.json(
-    users.map((u) => ({ id: u.id, name: u.name || "Sem nome" }))
+    users
+      .filter((u) => u.steamUsername)
+      .map((u) => ({ id: u.id, name: u.steamUsername }))
   );
 }
