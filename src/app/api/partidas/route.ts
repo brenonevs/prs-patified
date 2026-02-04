@@ -143,6 +143,11 @@ export async function GET() {
   return NextResponse.json(rows);
 }
 
+type PodiumEntry = {
+  userId?: string;
+  playerName?: string;
+};
+
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
@@ -150,9 +155,9 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { jogo, podium: userIds, imageUrl } = body as {
+  const { jogo, podium, imageUrl } = body as {
     jogo?: string;
-    podium?: string[];
+    podium?: (string | PodiumEntry)[];
     imageUrl?: string;
   };
 
@@ -163,15 +168,33 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!Array.isArray(userIds) || userIds.length < 1) {
+  if (!Array.isArray(podium) || podium.length < 1) {
     return NextResponse.json(
       { error: "Informe pelo menos 1 jogador." },
       { status: 400 }
     );
   }
 
-  const unique = [...new Set(userIds)];
-  if (unique.length !== userIds.length) {
+  const normalizedPodium: PodiumEntry[] = podium.map((entry) => {
+    if (typeof entry === "string") {
+      return { userId: entry };
+    }
+    return entry;
+  });
+
+  for (const entry of normalizedPodium) {
+    if (!entry.userId && !entry.playerName?.trim()) {
+      return NextResponse.json(
+        { error: "Cada posição deve ter um jogador ou nome." },
+        { status: 400 }
+      );
+    }
+  }
+
+  const identifiers = normalizedPodium.map((e) =>
+    e.userId ?? e.playerName?.toLowerCase().trim()
+  );
+  if (new Set(identifiers).size !== identifiers.length) {
     return NextResponse.json(
       { error: "Cada jogador só pode aparecer em uma posição." },
       { status: 400 }
@@ -185,16 +208,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const userIds = normalizedPodium
+    .filter((e) => e.userId)
+    .map((e) => e.userId!);
+
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
     select: { id: true, steamUsername: true },
   });
   const userMap = new Map(users.map((u) => [u.id, u.steamUsername ?? "?"]));
 
-  const playerNames = userIds.map((id) => userMap.get(id) ?? "?");
+  const playerNames = normalizedPodium.map((entry) => {
+    if (entry.userId) {
+      return userMap.get(entry.userId) ?? "?";
+    }
+    return entry.playerName?.trim() ?? "?";
+  });
 
   let cheatingDetected = false;
-  let finalUserIds = userIds;
+  let finalPodium = normalizedPodium;
   let finalPlayerNames = playerNames;
   let originalRanking = playerNames;
   let correctedRanking: string[] | null = null;
@@ -205,16 +237,23 @@ export async function POST(request: NextRequest) {
       const validation = await validateRanking(playerNames, imageUrl);
       console.log("Resultado da validação:", JSON.stringify(validation, null, 2));
 
-      if (!validation.rankingCorreto) {
-        cheatingDetected = true;
+      if (!validation.rankingCorreto && validation.rankingCorrigido && validation.rankingCorrigido.length > 0) {
+        const isSameRanking =
+          validation.rankingCorrigido.length === playerNames.length &&
+          validation.rankingCorrigido.every((name, i) =>
+            name.toLowerCase().trim() === playerNames[i].toLowerCase().trim()
+          );
 
-        await prisma.user.update({
-          where: { id: session.user.id },
-          data: { cheatAttempts: { increment: 1 } },
-        });
-
-        if (validation.rankingCorrigido && validation.rankingCorrigido.length > 0) {
+        if (isSameRanking) {
+          console.log("Rankings são iguais, ignorando falso positivo da validação");
+        } else {
+          cheatingDetected = true;
           correctedRanking = validation.rankingCorrigido;
+
+          await prisma.user.update({
+            where: { id: session.user.id },
+            data: { cheatAttempts: { increment: 1 } },
+          });
 
           const allUsers = await prisma.user.findMany({
             where: { steamUsername: { not: null } },
@@ -230,20 +269,18 @@ export async function POST(request: NextRequest) {
             return match;
           });
 
-          const correctedIds = matchedResults
-            .filter((m): m is NonNullable<typeof m> => m !== null)
-            .map((m) => m.id);
+          finalPodium = matchedResults.map((match, index) => {
+            if (match) {
+              return { userId: match.id };
+            }
+            return { playerName: validation.rankingCorrigido[index] };
+          });
 
-          const correctedNames = matchedResults
-            .filter((m): m is NonNullable<typeof m> => m !== null)
-            .map((m) => m.name);
+          finalPlayerNames = matchedResults.map((match, index) =>
+            match?.name ?? validation.rankingCorrigido[index]
+          );
 
-          console.log("IDs mapeados:", correctedIds);
-
-          if (correctedIds.length >= 1) {
-            finalUserIds = correctedIds;
-            finalPlayerNames = correctedNames;
-          }
+          console.log("Pódio corrigido:", finalPodium);
         }
       }
     } catch (err) {
@@ -257,10 +294,10 @@ export async function POST(request: NextRequest) {
       fotoUrl: imageUrl,
       createdById: session.user.id,
       podium: {
-        create: finalUserIds.map((userId, index) => ({
+        create: finalPodium.map((entry, index) => ({
           posicao: index + 1,
-          userId,
-          playerName: finalPlayerNames[index] ?? userMap.get(userId) ?? "?",
+          userId: entry.userId ?? null,
+          playerName: finalPlayerNames[index] ?? entry.playerName ?? "?",
         })),
       },
     },

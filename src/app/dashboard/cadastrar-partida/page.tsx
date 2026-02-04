@@ -18,11 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { PlayerCombobox, type PlayerOption } from "@/components/ui/player-combobox"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { IconPlus, IconTrash, IconLoader2, IconAlertTriangle } from "@tabler/icons-react"
 
-type UserOption = { id: string; name: string }
+type PodiumEntry = {
+  type: "user" | "guest"
+  userId?: string
+  playerName?: string
+  inputValue: string 
+}
 
 const MEDALHAS: string[] = ["🥇", "🥈", "🥉"]
 
@@ -31,9 +37,18 @@ function getMedalha(pos: number): string {
   return `${pos}º`
 }
 
+const createEmptyEntry = (): PodiumEntry => ({
+  type: "guest",
+  inputValue: "",
+})
+
 export default function CadastrarPartidaPage() {
-  const [users, setUsers] = React.useState<UserOption[]>([])
-  const [posicoes, setPosicoes] = React.useState<string[]>(["", "", ""])
+  const [users, setUsers] = React.useState<PlayerOption[]>([])
+  const [posicoes, setPosicoes] = React.useState<PodiumEntry[]>([
+    createEmptyEntry(),
+    createEmptyEntry(),
+    createEmptyEntry(),
+  ])
   const [jogo, setJogo] = React.useState("Straftat")
   const [imageUrl, setImageUrl] = React.useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
@@ -47,7 +62,7 @@ export default function CadastrarPartidaPage() {
   React.useEffect(() => {
     fetch("/api/users")
       .then((r) => (r.ok ? r.json() : []))
-      .then((data: UserOption[]) => setUsers(data))
+      .then((data: PlayerOption[]) => setUsers(data))
       .catch(() => setUsers([]))
       .finally(() => setLoadingUsers(false))
   }, [])
@@ -109,16 +124,30 @@ export default function CadastrarPartidaPage() {
     setUploadError(null)
   }
 
-  const setPosicao = (index: number, userId: string) => {
+  const handlePlayerChange = (index: number, value: string, selectedUser?: PlayerOption) => {
     setPosicoes((prev) => {
       const next = [...prev]
-      next[index] = userId
+      if (selectedUser) {
+        next[index] = {
+          type: "user",
+          userId: selectedUser.id,
+          playerName: undefined,
+          inputValue: selectedUser.name,
+        }
+      } else {
+        next[index] = {
+          type: "guest",
+          userId: undefined,
+          playerName: value.trim() || undefined,
+          inputValue: value,
+        }
+      }
       return next
     })
   }
 
   const adicionarPosicao = () => {
-    setPosicoes((prev) => [...prev, ""])
+    setPosicoes((prev) => [...prev, createEmptyEntry()])
   }
 
   const removerPosicao = (index: number) => {
@@ -126,26 +155,28 @@ export default function CadastrarPartidaPage() {
     setPosicoes((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const disponiveisPara = (index: number) =>
-    users.filter((u) => {
-      const jaEscolhidoEmOutra = posicoes.some((id, i) => i !== index && id === u.id)
-      const ehEstaPosicao = posicoes[index] === u.id
-      return ehEstaPosicao || !jaEscolhidoEmOutra
-    })
+  const nomesUsados = (exceptIndex: number) =>
+    posicoes
+      .filter((_, i) => i !== exceptIndex)
+      .map((p) => p.inputValue.toLowerCase())
+      .filter(Boolean)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setCheatingWarning(false)
 
-    const preenchidos = posicoes.filter(Boolean)
+    const preenchidos = posicoes.filter((p) => p.inputValue.trim())
     if (preenchidos.length < 1) {
       toast.error("Informe pelo menos 1 jogador.")
       return
     }
-    if (new Set(preenchidos).size !== preenchidos.length) {
+
+    const nomes = preenchidos.map((p) => p.inputValue.toLowerCase().trim())
+    if (new Set(nomes).size !== nomes.length) {
       toast.error("Cada jogador só pode aparecer em uma posição.")
       return
     }
+
     if (!jogo.trim()) {
       toast.error("Informe o jogo.")
       return
@@ -159,6 +190,13 @@ export default function CadastrarPartidaPage() {
       return
     }
 
+    const podiumData = preenchidos.map((entry) => {
+      if (entry.type === "user" && entry.userId) {
+        return { userId: entry.userId }
+      }
+      return { playerName: entry.inputValue.trim() }
+    })
+
     setIsSubmitting(true)
     try {
       const res = await fetch("/api/partidas", {
@@ -166,7 +204,7 @@ export default function CadastrarPartidaPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           jogo: jogo.trim(),
-          podium: preenchidos,
+          podium: podiumData,
           imageUrl,
         }),
       })
@@ -185,7 +223,7 @@ export default function CadastrarPartidaPage() {
         toast.success("Partida cadastrada! 🦆")
       }
 
-      setPosicoes(["", "", ""])
+      setPosicoes([createEmptyEntry(), createEmptyEntry(), createEmptyEntry()])
       setJogo("Straftat")
       clearPhoto()
     } catch (err) {
@@ -233,46 +271,44 @@ export default function CadastrarPartidaPage() {
                         Ranking da partida
                       </Label>
                       <div className="flex flex-col gap-3 md:gap-4">
-                        {posicoes.map((userId, index) => (
-                          <div key={index} className="flex items-end gap-2">
-                            <div className="flex-1 space-y-1.5">
-                              <Label className="text-muted-foreground text-xs font-normal md:text-sm">
-                                {index + 1 <= 3
-                                  ? `${getMedalha(index + 1)} ${index + 1}º lugar`
-                                  : `${index + 1}º lugar`}
-                              </Label>
-                              <Select
-                                key={`pos-${index}-${posicoes.filter((_, i) => i !== index).join("-")}`}
-                                value={userId || undefined}
-                                onValueChange={(v) => setPosicao(index, v)}
-                                disabled={loadingUsers}
-                              >
-                                <SelectTrigger className="h-9 w-full md:h-10">
-                                  <SelectValue placeholder="Selecione o jogador" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {disponiveisPara(index).map((u) => (
-                                    <SelectItem key={u.id} value={u.id}>
-                                      {u.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                        {posicoes.map((entry, index) => {
+                          const usados = nomesUsados(index)
+                          const sugestoes = users.filter(
+                            (u) => !usados.includes(u.name.toLowerCase())
+                          )
+                          return (
+                            <div key={index} className="flex items-end gap-2">
+                              <div className="flex-1 space-y-1.5">
+                                <Label className="text-muted-foreground text-xs font-normal md:text-sm">
+                                  {index + 1 <= 3
+                                    ? `${getMedalha(index + 1)} ${index + 1}º lugar`
+                                    : `${index + 1}º lugar`}
+                                </Label>
+                                <PlayerCombobox
+                                  value={entry.inputValue}
+                                  onChange={(value, selectedUser) =>
+                                    handlePlayerChange(index, value, selectedUser)
+                                  }
+                                  options={sugestoes}
+                                  disabled={loadingUsers}
+                                  isRegisteredUser={entry.type === "user"}
+                                />
+                              </div>
+                              {posicoes.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="shrink-0 text-muted-foreground hover:text-destructive mb-1"
+                                  onClick={() => removerPosicao(index)}
+                                  aria-label="Remover posição"
+                                >
+                                  <IconTrash className="size-4" />
+                                </Button>
+                              )}
                             </div>
-                            {posicoes.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="shrink-0 text-muted-foreground hover:text-destructive"
-                                onClick={() => removerPosicao(index)}
-                                aria-label="Remover posição"
-                              >
-                                <IconTrash className="size-4" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
+                          )
+                        })}
                         <Button
                           type="button"
                           variant="outline"

@@ -19,10 +19,32 @@ export async function POST(request: Request) {
     );
   }
 
+  const trimmedUsername = steamUsername.trim();
+
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { steamUsername: steamUsername.trim() },
+    data: { steamUsername: trimmedUsername },
   });
 
-  return NextResponse.json({ success: true });
+  const claimedEntries = await prisma.partidaPodium.updateMany({
+    where: {
+      userId: null,
+      playerName: {
+        equals: trimmedUsername,
+        mode: "insensitive",
+      },
+    },
+    data: {
+      userId: session.user.id,
+    },
+  });
+
+  console.log(
+    `Claim: ${claimedEntries.count} entradas vinculadas ao usuário ${session.user.id} (${trimmedUsername})`
+  );
+
+  return NextResponse.json({
+    success: true,
+    claimedCount: claimedEntries.count,
+  });
 }
