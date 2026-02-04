@@ -7,6 +7,7 @@ import { getPusherClient, getLobbyChannelName } from "@/lib/pusher-client";
 import { LobbyWaiting } from "@/components/lobby/LobbyWaiting";
 import { LobbyInProgress } from "@/components/lobby/LobbyInProgress";
 import { LobbyVoting } from "@/components/lobby/LobbyVoting";
+import { LobbyCompleted } from "@/components/lobby/LobbyCompleted";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import type { Participant } from "@/components/lobby/ParticipantList";
@@ -90,6 +91,7 @@ export default function LobbyRoomPage() {
       channel.bind("voting_completed", handler);
       channel.bind("lobby_cancelled", handler);
       channel.bind("lobby_expired", handler);
+      channel.bind("lobby_restarted", handler);
     }
 
     const pollInterval = setInterval(fetchLobby, 5000);
@@ -139,20 +141,21 @@ export default function LobbyRoomPage() {
     );
   }
 
+  const isHost = lobby.currentUserId === lobby.hostId;
+
   if (lobby.status === "COMPLETED") {
     return (
       <>
         <SiteHeader title={`Sala ${lobby.code}`} />
-        <div className="flex flex-col items-center justify-center gap-4 min-h-[40vh] p-6">
-          <p className="text-lg font-medium">Partida registrada com sucesso!</p>
-          {lobby.partidaId && (
-            <Button onClick={() => router.push("/dashboard/ranking")}>
-              Ver ranking
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => router.push("/dashboard/lobby")}>
-            Voltar aos lobbies
-          </Button>
+        <div className="p-6 max-w-xl mx-auto">
+          <LobbyCompleted
+            lobbyId={lobby.id}
+            code={lobby.code}
+            partidaId={lobby.partidaId}
+            isHost={isHost}
+            onLobbyUpdated={fetchLobby}
+            onLeave={handleLeave}
+          />
         </div>
       </>
     );
@@ -173,8 +176,6 @@ export default function LobbyRoomPage() {
       </>
     );
   }
-
-  const isHost = lobby.currentUserId === lobby.hostId;
 
   if (lobby.status === "WAITING") {
     return (
