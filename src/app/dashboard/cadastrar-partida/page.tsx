@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { IconPlus, IconTrash } from "@tabler/icons-react"
+import { IconPlus, IconTrash, IconLoader2, IconAlertTriangle } from "@tabler/icons-react"
 
 type UserOption = { id: string; name: string }
 
@@ -35,10 +35,14 @@ export default function CadastrarPartidaPage() {
   const [users, setUsers] = React.useState<UserOption[]>([])
   const [posicoes, setPosicoes] = React.useState<string[]>(["", "", ""])
   const [jogo, setJogo] = React.useState("Straftat")
-  const [foto, setFoto] = React.useState<File | null>(null)
+  const [imageUrl, setImageUrl] = React.useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [pendingFile, setPendingFile] = React.useState<File | null>(null)
+  const [isUploading, setIsUploading] = React.useState(false)
+  const [uploadError, setUploadError] = React.useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [loadingUsers, setLoadingUsers] = React.useState(true)
+  const [cheatingWarning, setCheatingWarning] = React.useState(false)
 
   React.useEffect(() => {
     fetch("/api/users")
@@ -48,18 +52,61 @@ export default function CadastrarPartidaPage() {
       .finally(() => setLoadingUsers(false))
   }, [])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadFile = async (file: File) => {
+    setIsUploading(true)
+    setUploadError(null)
+
+    try {
+      const formData = new FormData()
+      formData.set("file", file)
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error ?? "Erro ao fazer upload")
+      }
+
+      const { url } = await res.json()
+      setImageUrl(url)
+      setPendingFile(null)
+      toast.success("Imagem enviada!")
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Erro ao enviar imagem"
+      setUploadError(errorMsg)
+      toast.error(errorMsg)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file && file.type.startsWith("image/")) {
-      setFoto(file)
-      setPreviewUrl(URL.createObjectURL(file))
+    if (!file || !file.type.startsWith("image/")) return
+
+    const localPreview = URL.createObjectURL(file)
+    setPreviewUrl(localPreview)
+    setImageUrl(null)
+    setPendingFile(file)
+
+    await uploadFile(file)
+  }
+
+  const retryUpload = async () => {
+    if (pendingFile) {
+      await uploadFile(pendingFile)
     }
   }
 
   const clearPhoto = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl)
-    setFoto(null)
     setPreviewUrl(null)
+    setImageUrl(null)
+    setPendingFile(null)
+    setUploadError(null)
   }
 
   const setPosicao = (index: number, userId: string) => {
@@ -75,7 +122,7 @@ export default function CadastrarPartidaPage() {
   }
 
   const removerPosicao = (index: number) => {
-    if (posicoes.length <= 3) return
+    if (posicoes.length <= 1) return
     setPosicoes((prev) => prev.filter((_, i) => i !== index))
   }
 
@@ -88,9 +135,11 @@ export default function CadastrarPartidaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setCheatingWarning(false)
+
     const preenchidos = posicoes.filter(Boolean)
-    if (preenchidos.length < 3) {
-      toast.error("Informe pelo menos os 3 primeiros lugares (1º, 2º e 3º).")
+    if (preenchidos.length < 1) {
+      toast.error("Informe pelo menos 1 jogador.")
       return
     }
     if (new Set(preenchidos).size !== preenchidos.length) {
@@ -101,25 +150,41 @@ export default function CadastrarPartidaPage() {
       toast.error("Informe o jogo.")
       return
     }
-    if (!foto) {
-      toast.error("Envie uma foto como prova da partida.")
+    if (!imageUrl) {
+      if (isUploading) {
+        toast.error("Aguarde o upload da imagem terminar.")
+      } else {
+        toast.error("Envie uma foto como prova da partida.")
+      }
       return
     }
+
     setIsSubmitting(true)
     try {
-      const formData = new FormData()
-      formData.set("jogo", jogo.trim())
-      formData.set("podium", JSON.stringify(preenchidos))
-      formData.set("foto", foto)
       const res = await fetch("/api/partidas", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jogo: jogo.trim(),
+          podium: preenchidos,
+          imageUrl,
+        }),
       })
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error ?? "Erro ao cadastrar")
       }
-      toast.success("Partida cadastrada! 🦆")
+
+      const result = await res.json()
+
+      if (result.cheatingDetected) {
+        setCheatingWarning(true)
+        toast.warning("Ranking corrigido automaticamente. Tentativa de trapaça detectada!")
+      } else {
+        toast.success("Partida cadastrada! 🦆")
+      }
+
       setPosicoes(["", "", ""])
       setJogo("Straftat")
       clearPhoto()
@@ -135,6 +200,17 @@ export default function CadastrarPartidaPage() {
       <SiteHeader title="Cadastrar partida" />
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-4 md:px-6 md:py-5">
+          {cheatingWarning && (
+            <div className="mb-4 flex items-center gap-3 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-yellow-600 dark:text-yellow-400">
+              <IconAlertTriangle className="size-5 shrink-0" />
+              <div>
+                <p className="font-semibold">Tentativa de trapaça detectada!</p>
+                <p className="text-sm opacity-90">
+                  O ranking informado não correspondia à imagem. O ranking foi corrigido automaticamente e essa tentativa foi registrada.
+                </p>
+              </div>
+            </div>
+          )}
           <Card className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
             <CardHeader className="shrink-0 px-4 pb-3 pt-4 md:px-6 md:pb-4 md:pt-6">
               <CardTitle className="flex items-center gap-2 text-lg md:text-2xl">
@@ -183,7 +259,7 @@ export default function CadastrarPartidaPage() {
                                 </SelectContent>
                               </Select>
                             </div>
-                            {posicoes.length > 3 && (
+                            {posicoes.length > 1 && (
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -226,7 +302,7 @@ export default function CadastrarPartidaPage() {
                   <div className="shrink-0 pt-2">
                     <Button
                       type="submit"
-                      disabled={isSubmitting || loadingUsers}
+                      disabled={isSubmitting || loadingUsers || isUploading}
                       size="default"
                       className="w-full md:min-w-[200px] lg:w-auto"
                     >
@@ -260,17 +336,57 @@ export default function CadastrarPartidaPage() {
                       <img
                         src={previewUrl}
                         alt="Preview da prova"
-                        className="h-full w-full object-contain"
+                        className={cn(
+                          "h-full w-full object-contain",
+                          (isUploading || uploadError) && "opacity-50"
+                        )}
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="absolute bottom-2 right-2 md:bottom-3 md:right-3"
-                        onClick={clearPhoto}
-                      >
-                        Trocar foto
-                      </Button>
+                      {isUploading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                          <div className="flex items-center gap-2 rounded-lg bg-background/90 px-4 py-2">
+                            <IconLoader2 className="size-5 animate-spin" />
+                            <span className="text-sm">Enviando...</span>
+                          </div>
+                        </div>
+                      )}
+                      {uploadError && !isUploading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                          <div className="flex flex-col items-center gap-2 rounded-lg bg-background/90 px-4 py-3">
+                            <IconAlertTriangle className="size-5 text-destructive" />
+                            <span className="text-sm text-destructive">Falha no upload</span>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={retryUpload}
+                            >
+                              Tentar novamente
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      {!isUploading && !uploadError && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="absolute bottom-2 right-2 md:bottom-3 md:right-3"
+                          onClick={clearPhoto}
+                        >
+                          Trocar foto
+                        </Button>
+                      )}
+                      {uploadError && !isUploading && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={clearPhoto}
+                        >
+                          <IconTrash className="size-4" />
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>

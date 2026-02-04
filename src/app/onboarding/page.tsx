@@ -96,7 +96,7 @@ export default function OnboardingPage() {
           </div>
 
           <div className="mt-6 space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label htmlFor="steamUsername" className="text-sm font-medium">
                 Nome de usuário Steam
               </label>

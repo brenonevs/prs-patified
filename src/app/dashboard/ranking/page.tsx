@@ -1,3 +1,6 @@
+"use client"
+
+import * as React from "react"
 import { SiteHeader } from "@/components/site-header"
 import {
   Card,
@@ -15,42 +18,20 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { IconLoader2 } from "@tabler/icons-react"
 
 const PONTOS_POR_PATIFICADA = 3
 const PONTOS_POR_VEZ_PATIFICADO = -1
 
-function calcularPontos(patificadas: number, vezesPatificado: number): number {
-  return (
-    PONTOS_POR_PATIFICADA * patificadas +
-    PONTOS_POR_VEZ_PATIFICADO * vezesPatificado
-  )
-}
-
-type JogadorRaw = {
+type RankingRow = {
+  userId: string
   name: string
   jogo: string
   patificadas: number
   vezesPatificado: number
-}
-
-const mockJogadores: JogadorRaw[] = [
-  { name: "Ana Silva", jogo: "Lago dos Patos", patificadas: 24, vezesPatificado: 8 },
-  { name: "Bruno Costa", jogo: "Lago dos Patos", patificadas: 20, vezesPatificado: 10 },
-  { name: "Maria Santos", jogo: "Pato Mania", patificadas: 18, vezesPatificado: 12 },
-  { name: "João Oliveira", jogo: "Lago dos Patos", patificadas: 15, vezesPatificado: 14 },
-  { name: "Carla Lima", jogo: "Pato Mania", patificadas: 12, vezesPatificado: 16 },
-]
-
-function ordenarPorPontuacao(
-  jogadores: JogadorRaw[]
-): (JogadorRaw & { pontos: number; rank: number })[] {
-  return jogadores
-    .map((j) => ({
-      ...j,
-      pontos: calcularPontos(j.patificadas, j.vezesPatificado),
-    }))
-    .sort((a, b) => b.pontos - a.pontos)
-    .map((j, index) => ({ ...j, rank: index + 1 }))
+  cheatAttempts: number
+  pontos: number
+  rank: number
 }
 
 const top3Medals = ["🥇", "🥈", "🥉"] as const
@@ -104,7 +85,16 @@ function RankCell({ rank }: { rank: number }) {
 }
 
 export default function RankingPage() {
-  const ranking = ordenarPorPontuacao(mockJogadores)
+  const [ranking, setRanking] = React.useState<RankingRow[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    fetch("/api/ranking")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: RankingRow[]) => setRanking(data))
+      .catch(() => setRanking([]))
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
     <>
@@ -132,119 +122,141 @@ export default function RankingPage() {
                   </span>{" "}
                   Pódio dos três primeiros — os patos supremos e as danadinhas.
                 </div>
-                <div className="overflow-hidden rounded-xl border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead className="w-24 text-center">#</TableHead>
-                        <TableHead>Jogador</TableHead>
-                        <TableHead>Jogo</TableHead>
-                        <TableHead className="text-right">Pontos</TableHead>
-                        <TableHead className="text-right">
-                          Patificadas
-                        </TableHead>
-                        <TableHead className="text-right">
-                          Vezes patificado
-                        </TableHead>
-                        <TableHead className="text-right">
-                          Total de partidas
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {ranking.map((row) => (
-                        <TableRow
-                          key={row.rank}
-                          className={cn(
-                            "transition-colors",
-                            row.rank === 1 &&
-                              "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500/20",
-                            row.rank === 2 &&
-                              "bg-slate-400/10 dark:bg-slate-400/5 border-slate-400/20",
-                            row.rank === 3 &&
-                              "bg-amber-700/10 dark:bg-amber-700/5 border-amber-700/20"
-                          )}
-                        >
-                          <TableCell
-                            className={cn(
-                              "text-center align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            <RankCell rank={row.rank} />
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            <div className="flex flex-col gap-0.5">
-                              <span className="font-medium">
-                                {row.rank === 1 && (
-                                  <span className="mr-1.5" role="img" aria-hidden>
-                                    👑
-                                  </span>
-                                )}
-                                {row.name}
-                              </span>
-                              <span
-                                className={cn(
-                                  "text-xs",
-                                  row.rank <= 3
-                                    ? "text-muted-foreground"
-                                    : "text-muted-foreground/80 italic"
-                                )}
-                              >
-                                {getApelido(row.rank)}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-muted-foreground align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            {row.jogo}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right tabular-nums font-semibold align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            {row.pontos}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right tabular-nums align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            {row.patificadas}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right tabular-nums align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            {row.vezesPatificado}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right tabular-nums font-medium align-middle",
-                              ROW_HEIGHT_CLASS
-                            )}
-                          >
-                            {row.patificadas + row.vezesPatificado}
-                          </TableCell>
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <IconLoader2 className="size-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : ranking.length === 0 ? (
+                  <div className="py-12 text-center text-muted-foreground">
+                    Nenhuma partida registrada ainda. Seja o primeiro a patificar!
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-xl border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50 hover:bg-muted/50">
+                          <TableHead className="w-24 text-center">#</TableHead>
+                          <TableHead>Jogador</TableHead>
+                          <TableHead>Jogo</TableHead>
+                          <TableHead className="text-right">Pontos</TableHead>
+                          <TableHead className="text-right">
+                            Patificadas
+                          </TableHead>
+                          <TableHead className="text-right">
+                            Vezes patificado
+                          </TableHead>
+                          <TableHead className="text-right">
+                            Total de partidas
+                          </TableHead>
+                          <TableHead className="text-right">
+                            Trapaças
+                          </TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {ranking.map((row) => (
+                          <TableRow
+                            key={row.userId}
+                            className={cn(
+                              "transition-colors",
+                              row.rank === 1 &&
+                                "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500/20",
+                              row.rank === 2 &&
+                                "bg-slate-400/10 dark:bg-slate-400/5 border-slate-400/20",
+                              row.rank === 3 &&
+                                "bg-amber-700/10 dark:bg-amber-700/5 border-amber-700/20"
+                            )}
+                          >
+                            <TableCell
+                              className={cn(
+                                "text-center align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              <RankCell rank={row.rank} />
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-medium flex items-center gap-1.5">
+                                  {row.rank === 1 && (
+                                    <span className="mr-0.5" role="img" aria-hidden>
+                                      👑
+                                    </span>
+                                  )}
+                                  {row.name}
+                                </span>
+                                <span
+                                  className={cn(
+                                    "text-xs",
+                                    row.rank <= 3
+                                      ? "text-muted-foreground"
+                                      : "text-muted-foreground/80 italic"
+                                  )}
+                                >
+                                  {getApelido(row.rank)}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-muted-foreground align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              {row.jogo}
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right tabular-nums font-semibold align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              {row.pontos}
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right tabular-nums align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              {row.patificadas}
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right tabular-nums align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              {row.vezesPatificado}
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right tabular-nums font-medium align-middle",
+                                ROW_HEIGHT_CLASS
+                              )}
+                            >
+                              {row.patificadas + row.vezesPatificado}
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right tabular-nums align-middle",
+                                ROW_HEIGHT_CLASS,
+                                row.cheatAttempts > 0 && "text-destructive"
+                              )}
+                            >
+                              {row.cheatAttempts}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
                 <p className="text-center text-sm text-muted-foreground">
                   <span role="img" aria-hidden>
                     🦆

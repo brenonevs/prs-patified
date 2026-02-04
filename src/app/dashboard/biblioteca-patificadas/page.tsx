@@ -101,7 +101,7 @@ export default function BibliotecaPatificadasPage() {
                   <Card key={p.id} className="overflow-hidden">
                     <div className="relative aspect-video w-full bg-muted">
                       <img
-                        src={`/api/partidas/foto/${p.fotoUrl}`}
+                        src={p.fotoUrl?.startsWith("http") ? p.fotoUrl : `/api/partidas/foto/${p.fotoUrl}`}
                         alt={`Prova: ${p.jogo ?? "Partida"} - ${p.data}`}
                         className="size-full object-cover"
                       />

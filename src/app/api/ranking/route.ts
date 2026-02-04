@@ -17,7 +17,7 @@ export async function GET() {
 
   const byUserId = new Map<
     string,
-    { name: string; jogo: string; patificadas: number; vezesPatificado: number }
+    { name: string; jogo: string; patificadas: number; vezesPatificado: number; cheatAttempts: number }
   >();
 
   for (const p of podiumByUser) {
@@ -26,10 +26,11 @@ export async function GET() {
     const patificadas = (current?.patificadas ?? 0) + (p.posicao === 1 ? 1 : 0);
     const vezesPatificado = (current?.vezesPatificado ?? 0) + (p.posicao >= 2 ? 1 : 0);
     byUserId.set(p.userId, {
-      name: p.user.name,
+      name: p.user.steamUsername ?? p.user.name,
       jogo: current?.jogo ?? p.partida.jogo,
       patificadas,
       vezesPatificado,
+      cheatAttempts: p.user.cheatAttempts ?? 0,
     });
   }
 
@@ -40,6 +41,7 @@ export async function GET() {
       jogo: data.jogo,
       patificadas: data.patificadas,
       vezesPatificado: data.vezesPatificado,
+      cheatAttempts: data.cheatAttempts,
       pontos:
         PONTOS_POR_PATIFICADA * data.patificadas +
         PONTOS_POR_VEZ_PATIFICADO * data.vezesPatificado,
