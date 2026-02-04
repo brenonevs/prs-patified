@@ -17,8 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { IconLoader2 } from "@tabler/icons-react"
+import { IconInfoCircle, IconLoader2 } from "@tabler/icons-react"
 
 const PONTOS_POR_PATIFICADA = 3
 const PONTOS_POR_VEZ_PATIFICADO = -1
@@ -111,8 +116,24 @@ export default function RankingPage() {
                   Quem é o pato mais brabo do lago?
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Pontuação: +{PONTOS_POR_PATIFICADA} por patificada, {PONTOS_POR_VEZ_PATIFICADO} por vez
-                  patificado. O ranking segue a ordem dos pontos. 🐤
+                  <span className="inline-flex items-center gap-1.5">
+                    Como funciona a pontuação
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex text-muted-foreground hover:text-foreground rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          aria-label="Explicação da pontuação"
+                        >
+                          <IconInfoCircle className="size-4 shrink-0" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-[280px]">
+                        +{PONTOS_POR_PATIFICADA} pontos por patificada, {PONTOS_POR_VEZ_PATIFICADO} por
+                        vez patificado. O ranking segue a ordem dos pontos. 🐤
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -131,25 +152,43 @@ export default function RankingPage() {
                     Nenhuma partida registrada ainda. Seja o primeiro a patificar!
                   </div>
                 ) : (
-                  <div className="overflow-hidden rounded-xl border">
+                  <div className="overflow-x-auto rounded-xl border">
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
-                          <TableHead className="w-24 text-center">#</TableHead>
-                          <TableHead>Jogador</TableHead>
-                          <TableHead>Jogo</TableHead>
-                          <TableHead className="text-right">Pontos</TableHead>
-                          <TableHead className="text-right">
+                          <TableHead className="w-24 shrink-0 text-center">#</TableHead>
+                          <TableHead className="min-w-[140px]">Jogador</TableHead>
+                          <TableHead className="min-w-[100px]">Jogo</TableHead>
+                          <TableHead className="text-right px-4">Pontos</TableHead>
+                          <TableHead className="text-right px-4">
                             Patificadas
                           </TableHead>
-                          <TableHead className="text-right">
+                          <TableHead className="text-right px-4">
                             Vezes patificado
                           </TableHead>
-                          <TableHead className="text-right">
+                          <TableHead className="text-right px-4">
                             Total de partidas
                           </TableHead>
-                          <TableHead className="text-right">
-                            Trapaças
+                          <TableHead className="text-right pr-6 pl-4">
+                            <span className="inline-flex items-center justify-end gap-1.5">
+                              Trapaças
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    type="button"
+                                    className="inline-flex text-muted-foreground hover:text-foreground rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    aria-label="O que são trapaças?"
+                                  >
+                                    <IconInfoCircle className="size-3.5 shrink-0" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-[260px]">
+                                  Número de tentativas de cadastrar partida com
+                                  resultado que não condiz com a realidade
+                                  (ex.: marcar 1º lugar sem ter vencido).
+                                </TooltipContent>
+                              </Tooltip>
+                            </span>
                           </TableHead>
                         </TableRow>
                       </TableHeader>
@@ -169,7 +208,7 @@ export default function RankingPage() {
                           >
                             <TableCell
                               className={cn(
-                                "text-center align-middle",
+                                "text-center align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -177,7 +216,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "align-middle",
+                                "align-middle pl-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -204,7 +243,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-muted-foreground align-middle",
+                                "text-muted-foreground align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -212,7 +251,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right tabular-nums font-semibold align-middle",
+                                "text-right tabular-nums font-semibold align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -220,7 +259,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right tabular-nums align-middle",
+                                "text-right tabular-nums align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -228,7 +267,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right tabular-nums align-middle",
+                                "text-right tabular-nums align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -236,7 +275,7 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right tabular-nums font-medium align-middle",
+                                "text-right tabular-nums font-medium align-middle px-4",
                                 ROW_HEIGHT_CLASS
                               )}
                             >
@@ -244,9 +283,8 @@ export default function RankingPage() {
                             </TableCell>
                             <TableCell
                               className={cn(
-                                "text-right tabular-nums align-middle",
-                                ROW_HEIGHT_CLASS,
-                                row.cheatAttempts > 0 && "text-destructive"
+                                "text-right tabular-nums align-middle pr-6 pl-4",
+                                ROW_HEIGHT_CLASS
                               )}
                             >
                               {row.cheatAttempts}
