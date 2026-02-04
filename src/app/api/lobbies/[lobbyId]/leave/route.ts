@@ -74,7 +74,9 @@ export async function POST(
   }
 
   const isHostLeaving = lobby.hostId === session.user.id;
-  const remaining = lobby.participants.filter((p) => p.userId !== session.user.id);
+  const remaining = lobby.participants.filter(
+    (p: { userId: string }) => p.userId !== session.user.id
+  );
 
   if (isHostLeaving && remaining.length > 0) {
     const newHostId = remaining[0].userId;
