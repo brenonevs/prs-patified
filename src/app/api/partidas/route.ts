@@ -199,8 +199,8 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const identifiers = normalizedPodium.map((e: PodiumEntry) =>
-    e.userId ?? e.playerName?.toLowerCase().trim()
+  const identifiers: (string | undefined)[] = normalizedPodium.map(
+    (e: PodiumEntry) => e.userId ?? e.playerName?.toLowerCase().trim()
   );
   if (new Set(identifiers).size !== identifiers.length) {
     return NextResponse.json(
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const userIds = normalizedPodium
+  const userIds: string[] = normalizedPodium
     .filter((e: PodiumEntry) => e.userId)
     .map((e: PodiumEntry) => e.userId!);
 
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
     users.map((u: UserSteamRow) => [u.id, u.steamUsername ?? "?"])
   );
 
-  const playerNames: string[] = normalizedPodium.map((entry: PodiumEntry) => {
+  const playerNames = normalizedPodium.map((entry: PodiumEntry): string => {
     if (entry.userId) {
       return userMap.get(entry.userId) ?? "?";
     }

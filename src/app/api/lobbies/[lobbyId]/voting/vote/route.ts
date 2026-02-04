@@ -95,7 +95,7 @@ export async function POST(
     return NextResponse.json({ ok: true, status: "REJECTED" });
   }
 
-  const participantIds = lobby.participants.map(
+  const participantIds: string[] = lobby.participants.map(
     (p: { userId: string }) => p.userId
   );
   const votesForVersion = await prisma.lobbyVote.findMany({
