@@ -25,12 +25,10 @@ import {
 import { cn } from "@/lib/utils"
 import { Info, Loader2 } from "lucide-react"
 
-const PONTOS_POR_POSICAO = [
-  { posicao: "1º lugar", pontos: 5 },
-  { posicao: "2º lugar", pontos: 3 },
-  { posicao: "3º lugar", pontos: 2 },
-  { posicao: "4º lugar", pontos: 1 },
-  { posicao: "5º+ lugar", pontos: 0 },
+const REGRAS_PONTUACAO = [
+  { desc: "1º lugar", pontos: "+3" },
+  { desc: "Último lugar da partida", pontos: "-1" },
+  { desc: "Demais posições", pontos: "0" },
 ]
 
 type RankingRow = {
@@ -136,11 +134,11 @@ export default function RankingPage() {
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="max-w-[280px]">
                         <div className="space-y-1">
-                          <p className="font-medium">Pontos por posição:</p>
-                          {PONTOS_POR_POSICAO.map((p) => (
-                            <div key={p.posicao} className="flex justify-between gap-4 text-xs">
-                              <span>{p.posicao}</span>
-                              <span className="font-mono">+{p.pontos}</span>
+                          <p className="font-medium">Pontuação:</p>
+                          {REGRAS_PONTUACAO.map((r) => (
+                            <div key={r.desc} className="flex justify-between gap-4 text-xs">
+                              <span>{r.desc}</span>
+                              <span className="font-mono">{r.pontos}</span>
                             </div>
                           ))}
                           <p className="pt-1 text-xs text-muted-foreground">

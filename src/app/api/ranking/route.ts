@@ -3,16 +3,14 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const PONTOS_POR_POSICAO: Record<number, number> = {
-  1: 5,  
-  2: 3,  
-  3: 2, 
-  4: 1,  
-  // 5º+ lugar: 0 pontos
-};
-
-function getPontosPorPosicao(posicao: number): number {
-  return PONTOS_POR_POSICAO[posicao] ?? 0;
+function getPontosParaParticipante(
+  posicao: number,
+  partidaId: string,
+  maxPosicaoPorPartida: Map<string, number>
+): number {
+  if (posicao === 1) return 3;
+  if (maxPosicaoPorPartida.get(partidaId) === posicao) return -1;
+  return 0;
 }
 
 export async function GET() {
@@ -22,6 +20,12 @@ export async function GET() {
       partida: { select: { jogo: true } },
     },
   });
+
+  const maxPosicaoPorPartida = new Map<string, number>();
+  for (const p of allPodium) {
+    const current = maxPosicaoPorPartida.get(p.partidaId) ?? 0;
+    if (p.posicao > current) maxPosicaoPorPartida.set(p.partidaId, p.posicao);
+  }
 
   type PlayerData = {
     name: string;
@@ -52,11 +56,15 @@ export async function GET() {
       isGuest = true;
       cheatAttempts = 0;
     } else {
-      continue; 
+      continue;
     }
 
     const current = byPlayer.get(key);
-    const pontosDaPosicao = getPontosPorPosicao(p.posicao);
+    const pontosDaPosicao = getPontosParaParticipante(
+      p.posicao,
+      p.partidaId,
+      maxPosicaoPorPartida
+    );
 
     byPlayer.set(key, {
       name: current?.name ?? name,

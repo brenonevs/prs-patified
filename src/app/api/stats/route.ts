@@ -5,15 +5,14 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const PONTOS_POR_POSICAO: Record<number, number> = {
-  1: 5,
-  2: 3,
-  3: 2,
-  4: 1,
-};
-
-function getPontosPorPosicao(posicao: number): number {
-  return PONTOS_POR_POSICAO[posicao] ?? 0;
+function getPontosParaParticipante(
+  posicao: number,
+  partidaId: string,
+  maxPosicaoPorPartida: Map<string, number>
+): number {
+  if (posicao === 1) return 3;
+  if (maxPosicaoPorPartida.get(partidaId) === posicao) return -1;
+  return 0;
 }
 
 export async function GET() {
@@ -52,10 +51,25 @@ export async function GET() {
     },
   });
 
+  const partidaIds = [...new Set(podiumByUser.map((p) => p.partidaId))];
+  const podiumsPorPartida = await prisma.partidaPodium.findMany({
+    where: { partidaId: { in: partidaIds } },
+    select: { partidaId: true, posicao: true },
+  });
+  const maxPosicaoPorPartida = new Map<string, number>();
+  for (const p of podiumsPorPartida) {
+    const current = maxPosicaoPorPartida.get(p.partidaId) ?? 0;
+    if (p.posicao > current) maxPosicaoPorPartida.set(p.partidaId, p.posicao);
+  }
+
   const byUserId = new Map<string, number>();
   for (const p of podiumByUser) {
     if (!p.userId) continue;
-    const pts = getPontosPorPosicao(p.posicao);
+    const pts = getPontosParaParticipante(
+      p.posicao,
+      p.partidaId,
+      maxPosicaoPorPartida
+    );
     byUserId.set(p.userId, (byUserId.get(p.userId) ?? 0) + pts);
   }
 
