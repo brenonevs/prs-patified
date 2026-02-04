@@ -3,14 +3,8 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-function getPontosParaParticipante(
-  posicao: number,
-  partidaId: string,
-  maxPosicaoPorPartida: Map<string, number>
-): number {
-  if (posicao === 1) return 3;
-  if (maxPosicaoPorPartida.get(partidaId) === posicao) return -1;
-  return 0;
+function getPontosParaParticipante(posicao: number): number {
+  return posicao === 1 ? 1 : 0;
 }
 
 export async function GET() {
@@ -20,12 +14,6 @@ export async function GET() {
       partida: { select: { jogo: true } },
     },
   });
-
-  const maxPosicaoPorPartida = new Map<string, number>();
-  for (const p of allPodium) {
-    const current = maxPosicaoPorPartida.get(p.partidaId) ?? 0;
-    if (p.posicao > current) maxPosicaoPorPartida.set(p.partidaId, p.posicao);
-  }
 
   type PlayerData = {
     name: string;
@@ -60,11 +48,7 @@ export async function GET() {
     }
 
     const current = byPlayer.get(key);
-    const pontosDaPosicao = getPontosParaParticipante(
-      p.posicao,
-      p.partidaId,
-      maxPosicaoPorPartida
-    );
+    const pontosDaPosicao = getPontosParaParticipante(p.posicao);
 
     byPlayer.set(key, {
       name: current?.name ?? name,

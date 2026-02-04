@@ -26,8 +26,7 @@ import { cn } from "@/lib/utils"
 import { Info, Loader2 } from "lucide-react"
 
 const REGRAS_PONTUACAO = [
-  { desc: "1º lugar", pontos: "+3" },
-  { desc: "Último lugar da partida", pontos: "-1" },
+  { desc: "1º lugar", pontos: "+1" },
   { desc: "Demais posições", pontos: "0" },
 ]
 
