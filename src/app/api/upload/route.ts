@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { Storage } from "@google-cloud/storage";
+import { storage, bucketName } from "@/lib/gcs";
 import { auth } from "@/lib/auth";
-
-const bucketName = process.env.GCS_BUCKET_NAME;
-const storage = bucketName ? new Storage() : null;
 
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -14,7 +11,7 @@ export async function POST(request: NextRequest) {
 
   if (!storage || !bucketName) {
     return NextResponse.json(
-      { error: "GCS não configurado. Defina GCS_BUCKET_NAME e GOOGLE_APPLICATION_CREDENTIALS." },
+      { error: "GCS não configurado. Defina GCS_BUCKET_NAME e GCS_SERVICE_ACCOUNT_JSON (ou GOOGLE_APPLICATION_CREDENTIALS)." },
       { status: 500 }
     );
   }

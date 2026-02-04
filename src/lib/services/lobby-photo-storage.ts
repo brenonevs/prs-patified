@@ -1,7 +1,4 @@
-import { Storage } from "@google-cloud/storage";
-
-const bucketName = process.env.GCS_BUCKET_NAME;
-const storage = bucketName ? new Storage() : null;
+import { storage, bucketName } from "@/lib/gcs";
 
 const TEMP_PREFIX = "temp/lobby/";
 const PROVAS_PREFIX = "provas/";

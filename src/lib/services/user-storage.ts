@@ -1,15 +1,7 @@
-import { Storage } from "@google-cloud/storage";
-
-/**
- * GCS exige credenciais de Service Account (JSON com client_email e private_key).
- * GOOGLE_APPLICATION_CREDENTIALS deve apontar para esse JSON, não para o client
- * secret do OAuth (Login com Google), que não contém client_email.
- */
-const bucketName = process.env.GCS_BUCKET_NAME;
-const storage = bucketName ? new Storage() : null;
+import { storage, bucketName } from "@/lib/gcs";
 
 const GCS_CREDENTIALS_ERROR =
-  "GOOGLE_APPLICATION_CREDENTIALS deve apontar para o JSON de uma Service Account do GCP (IAM → Service Accounts → Chaves). Não use o client secret do OAuth (Login com Google).";
+  "Defina credenciais de Service Account: GCS_SERVICE_ACCOUNT_JSON (JSON em string) ou GOOGLE_APPLICATION_CREDENTIALS (caminho do arquivo). Use IAM → Service Accounts → Chaves no GCP.";
 
 /**
  * Prefixo no bucket onde ficam as pastas por usuário.
@@ -39,7 +31,7 @@ export function getUserFolderPrefix(userId: string): string {
 export async function createUserFolder(userId: string): Promise<void> {
   if (!storage || !bucketName) {
     throw new Error(
-      "GCS não configurado: defina GCS_BUCKET_NAME e credenciais (GOOGLE_APPLICATION_CREDENTIALS ou ADC)"
+      "GCS não configurado: defina GCS_BUCKET_NAME e credenciais (GCS_SERVICE_ACCOUNT_JSON ou GOOGLE_APPLICATION_CREDENTIALS)"
     );
   }
 
