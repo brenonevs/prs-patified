@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, ImageOff, Trophy } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
@@ -36,6 +37,14 @@ const ITEMS_PER_PAGE = 10
 
 const MEDALHAS = ["🥇", "🥈", "🥉"]
 
+/** Acesso à biblioteca bloqueado por enquanto. Redireciona para o dashboard. */
+function useBibliotecaBlocked() {
+  const router = useRouter()
+  React.useEffect(() => {
+    router.replace("/dashboard")
+  }, [router])
+}
+
 function formatDateTime(dateString: string): { date: string; time: string } {
   const date = new Date(dateString)
   return {
@@ -61,6 +70,8 @@ function getInitials(name: string): string {
 }
 
 export default function BibliotecaPatificadasPage() {
+  useBibliotecaBlocked()
+
   const [provas, setProvas] = React.useState<ProvaItem[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)

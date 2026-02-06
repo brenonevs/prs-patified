@@ -4,6 +4,7 @@ import * as React from "react"
 import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Lock } from "lucide-react"
 
 import {
   SidebarGroup,
@@ -20,6 +21,7 @@ export function NavMain({
     title: string
     url: string
     icon?: LucideIcon
+    locked?: boolean
   }[]
 }) {
   const pathname = usePathname()
@@ -28,20 +30,28 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item, index) => {
+          {items.map((item) => {
             const isActive = pathname === item.url
             return (
               <React.Fragment key={item.title}>
                 <SidebarMenuItem className="border-b border-sidebar-border/40 last:border-b-0">
                   <SidebarMenuButton
-                    tooltip={item.title}
+                    tooltip={item.locked ? `${item.title} (bloqueado)` : item.title}
                     asChild
-                    isActive={isActive}
+                    isActive={isActive && !item.locked}
                   >
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
+                    {item.locked ? (
+                      <span className="flex w-full cursor-not-allowed items-center gap-2 opacity-80">
+                        {item.icon && <item.icon className="size-5 shrink-0" />}
+                        <span className="flex-1 truncate">{item.title}</span>
+                        <Lock className="size-3.5 shrink-0 text-muted-foreground" />
+                      </span>
+                    ) : (
+                      <Link href={item.url} className="flex items-center gap-2">
+                        {item.icon && <item.icon className="size-5 shrink-0" />}
+                        <span>{item.title}</span>
+                      </Link>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </React.Fragment>
