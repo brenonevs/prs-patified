@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { LayoutDashboard, Trophy, ClipboardList, Image, Users, AlertTriangle } from "lucide-react"
+import { LayoutDashboard, Trophy, ClipboardList, Image, Users, AlertTriangle, Bird } from "lucide-react"
 
 import { PatifiedLogo } from "@/components/logo"
 import { NavMain } from "@/components/nav-main"
@@ -23,6 +23,7 @@ const defaultUser = {
 }
 
 const navMainItems = [
+  { title: "Patinho da Vez", url: "/dashboard/patinho-da-vez", icon: Bird },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Ranking", url: "/dashboard/ranking", icon: Trophy },
   { title: "Cadastrar partida", url: "/dashboard/cadastrar-partida", icon: ClipboardList },
