@@ -53,7 +53,7 @@ export default function OnboardingPage() {
         throw new Error(data.error || "Erro ao salvar");
       }
 
-      router.replace("/dashboard");
+      router.replace("/dashboard/patinho-da-vez");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar");
       setIsLoading(false);

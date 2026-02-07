@@ -22,12 +22,15 @@ export default function LoginPage() {
       ? searchParams.get("callbackURL")!
       : "/dashboard";
 
+  const targetURL =
+    callbackURL === "/dashboard" ? "/dashboard/patinho-da-vez" : callbackURL;
+
   useEffect(() => {
     if (isPending) return;
     if (session?.user) {
-      router.replace(callbackURL);
+      router.replace(targetURL);
     }
-  }, [session?.user, isPending, callbackURL, router]);
+  }, [session?.user, isPending, targetURL, router]);
 
   return (
     <section className="relative flex min-h-screen w-full overflow-hidden">
